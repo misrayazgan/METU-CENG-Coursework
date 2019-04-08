@@ -83,16 +83,13 @@ def sendMsgToRouters(sockbr1, sockbr2):
 				time_passed = now - sending_time				# Calculate time passed after sending
 				if time_passed < timeout:						# If it did not wait enough, wait until timeout
 					time.sleep(timeout - time_passed)
-					#print "sleeeeeeeeeeep"
 
 					if (base + window_size) > last_sent_packet:			# If new ACK received, base is updated
-						#print base, window_size, last_sent_packet
 						continue
 					
 				# Retransmit the first nonACKed packet in the window
 				ack_lock.acquire()
 				packet_num = received_acks.index(0)		# Find the first nonACKed packet
-				#print "packet_num", packet_num
 				ack_lock.release()
 				sockbr2.sendto(packetizeMsg(packet_num, send_buffer[packet_num]), (ip_r2, port))
 				sending_time = time.time()
