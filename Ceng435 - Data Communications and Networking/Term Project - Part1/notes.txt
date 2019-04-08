@@ -1,0 +1,9 @@
+ntp sync
+
+
+first add, then change or delete
+sudo tc qdisc change dev eth2 root netem delay 60ms 5ms distribution normal
+
+for broker: eth2, eth3
+for r1: eth2
+for r2: eth2
