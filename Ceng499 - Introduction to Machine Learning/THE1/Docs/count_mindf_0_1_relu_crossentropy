@@ -1,0 +1,16 @@
+Activation function: relu
+Loss function: categorical_crossentropy
+Layers: (512, 256, 128)
+Test set evaluation: [('loss', 4.247922026742157), ('categorical_accuracy', 0.5171682914974024), ('top2_acc', 0.7185247985676922), ('top3_acc', 0.8304366254109152)]
+Confusion Matrix
+['Comedy', 'Romance', 'Western', 'Musical', 'Action', 'War', 'Crime', 'Horror']
+[[ 69  94   2  21  33  12  54  10]
+ [ 66  93   9  36  23  23  32  13]
+ [  4   5 238  11   9   9  12   7]
+ [ 22  25  14 209  10   5   5   5]
+ [ 20  13  11   4 108  18  85  36]
+ [  4  14  21  13  29 191  20   3]
+ [ 28  19   4   5  72   3 138  25]
+ [ 19  11   8   5  29   6  43 174]]
+
+

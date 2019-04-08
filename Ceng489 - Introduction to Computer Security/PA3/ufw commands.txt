@@ -1,0 +1,20 @@
+1. Prevent A & B telnet:
+
+	sudo ufw deny from 10.0.2.4 to 10.0.2.5 proto tcp
+	sudo ufw deny from 10.0.2.5 to 10.0.2.4 proto tcp
+	sudo ufw deny out from 10.0.2.4 to 10.0.2.5 proto tcp
+	sudo ufw deny out from 10.0.2.5 to 10.0.2.4 proto tcp
+
+
+2. Prevent traffic to metu.edu.tr
+	sudo ufw deny out to 144.122.0.0/16 port 80
+
+
+3. Prevent traffic for HTTPS
+	sudo ufw deny out to any port 443
+
+
+4. Prevent ICMP traffic
+	sudo subl /etc/ufw/before.rules
+	sudo subl /etc/ufw/before6.rules
+	icmp ACCEPT -> DROP

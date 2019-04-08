@@ -1,0 +1,16 @@
+Activation function: tanh
+Loss function: categorical_hinge
+Layers: (512, 256, 128)
+Test set evaluation: [('loss', 0.8139275007199412), ('categorical_accuracy', 0.48664688432353087), ('top2_acc', 0.6053412464929365), ('top3_acc', 0.7002967360061122)]
+Confusion Matrix
+['Comedy', 'Romance', 'Western', 'Musical', 'Action', 'War', 'Crime', 'Horror']
+[[  0   3   4  24  12  14 227  11]
+ [  0   2   9  38   4  29 204   9]
+ [  0   2 237  11   2  16  23   4]
+ [  0   7  11 197   0   9  62   9]
+ [  0   0   6   5  74  31 158  21]
+ [  0   0  14   4   7 237  32   1]
+ [  0   1   9  10  32  10 215  17]
+ [  0   0   4   9  16   4  76 186]]
+
+

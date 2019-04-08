@@ -1,0 +1,16 @@
+Activation function: relu
+Loss function: categorical_hinge
+Layers: (512, 256, 128)
+Test set evaluation: [('loss', 1.0430831259567386), ('categorical_accuracy', 0.4781687154058381), ('top2_acc', 0.929207291326163), ('top3_acc', 0.9741415855186174)]
+Confusion Matrix
+['Comedy', 'Romance', 'Western', 'Musical', 'Action', 'War', 'Crime', 'Horror']
+[[ 81  16   5  23  27   3  27 113]
+ [ 52  23  15  67  23   4  25  86]
+ [  2   1 274   5   5   4   0   4]
+ [ 25   6  14 223  13   2   4   8]
+ [ 13   4  16  11 124   7  52  68]
+ [  8  13  36  35  54 112  23  14]
+ [  8   6  30  11  40   0  96 103]
+ [  4   9  20  17  34   0  16 195]]
+
+
