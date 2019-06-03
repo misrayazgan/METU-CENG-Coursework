@@ -7,17 +7,18 @@ def main(argv):
     if len(argv) != 2:
         print("Usage: python evaluate.py estimations.npy img_names.txt")
         exit()
-        
+
     with open(argv[1], "r") as f:
         files = f.readlines()
-        
+
     estimations = np.load(argv[0])
-    
+
     acc = 0
     for i, file in enumerate(files):
+        file = "ceng483-s19-hw3-dataset/val/images/" + file
         cur = read_image(file.rstrip()).reshape(-1).astype(np.int64)
         est = estimations[i].reshape(-1).astype(np.int64)
-    
+
         cur_acc = (np.abs(cur - est) < 12).sum() / cur.shape[0]
         acc += cur_acc
     acc /= len(files)
