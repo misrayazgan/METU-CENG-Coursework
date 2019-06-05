@@ -15,7 +15,7 @@ def main(argv):
 
     acc = 0
     for i, file in enumerate(files):
-        file = "ceng483-s19-hw3-dataset/val/images/" + file
+        file = "ceng483-s19-hw3-dataset/test/images/" + file
         cur = read_image(file.rstrip()).reshape(-1).astype(np.int64)
         est = estimations[i].reshape(-1).astype(np.int64)
 
