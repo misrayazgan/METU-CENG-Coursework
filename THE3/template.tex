@@ -71,53 +71,237 @@
 \end{center}
 \vspace{-10mm}
 \noindent\\ \\ 
-Please fill in the sections below only with the requested information. If you have additional things to mention, you can use the last section. Please note that all of the results in this report should be given for the \textbf{validation set} by default, unless otherwise specified. Also, when you are expected to comment on the effect of a parameter, please make sure to \textbf{fix} other parameters. You may support your comments with visuals (i.e. loss plot).
+This report introduces an analysis about image colorization by exploiting convolutional neural networks(CNNs) which are tuned with a variety of hyper-parameters with the aim of finding the configuration which provides the best results. The results in this report are obtained for the validation set provided. Some examples for the hyper-parameters that are tuned can be the learning rate, number of convolution layers, number of kernels in a convolution layer and kernel size. The related analysis of tuning these hyper-parameters are examined in details in the following sections.
 
 \section{Baseline Architecture (30 pts)}
-    Based on your qualitative results (do not forget to give them),
-    \begin{itemize}
-        \item Discuss effect of the number of conv layers:
-        \item Discuss effect of the kernel size(except the last conv layer):
-        \item Discuss effect of the number of kernels(except the last conv layer):
-        \item Discuss effect of the learning rate by choosing three values: a very large one, a very small one and a value of your choice:
+Before beginning the experiments, it should be noted that the given accuracy results are calculated with the provided evaluate.py script according to the 12-margin error. In addition, the optimal padding size for each layer is calculated with the following formula:
 
-    \end{itemize}
+$(kernel\_size - 1) / 2$
 
+\subsection{Effect of Changing Number of Convolutional Layers}\label{AA}
+
+Firstly, the effects of changing the number of conv layers in the model is examined below. Possible values for the number of conv layers are chosen as 1, 2 and 4. By fixing learning rate to $0.001$, number of kernels to $8$ and kernel size to $3x3$, the accuracy results obtained for different values of number of conv layers are given in the table below.
+
+\begin{table}[H]
+\begin{center}
+\caption{Number of Conv Layers vs. Accuracy}
+\begin{tabular}{|c|c|}
+\hline
+ Number of Conv Layers & Accuracy \\
+\hline
+$1$ & $0.68$ \\
+\hline
+$2$ & $0.69$ \\
+\hline
+$4$ & $0.67$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+From this table we can observe that increasing the number of conv layers does not mean increasing the accuracy. 2 layers have performed slightly better that 1 layer because adding more conv layers will result in extracting more features. However, this holds upto a limit. When the number of conv layers is increased to 4, the accuracy has decreased. This can be due to the fact that the CNN will tend to overfit because it will find the irregularities in the images when the number of conv layers is too high.
+
+\subsection{Effect of Changing Kernel Size}
+
+Secondly, in order to discuss the effect of changing the kernel size except the last conv layer, the values $3x3$ and $5x5$ are chosen as the possible values for the kernel size. Table-2 represents the accuracy results for these values of the kernel size for two different configurations by fixing the learning rate to $0.001$.
+
+\begin{table}[H]
+\begin{center}
+\caption{Kernel Size vs. Accuracy}
+\begin{tabular}{|c|c|c|c|}
+\hline
+ Kernel Size & Accuracy & Number of Conv Layers & Number of Kernels \\
+\hline
+$3x3$ & $0.68$ & 1 & 2 \\
+\hline
+$5x5$ & $0.65$ & 1 & 2 \\
+\hline
+$3x3$ & $0.58$ & 4 & 2 \\
+\hline
+$5x5$ & $0.60$ & 4 & 2 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Kernel size determines the amount of how much fine details we would like to consider in the images. For example, with 3x3 kernel size we can capture fine details of the images whereas with 5x5 kernel size we can capture larger features. As it can be observed from the table above, when the number of layers is lower, having a smaller kernel size results in more accurate results. However, when the number of kernels is higher, having a larger kernel size results in more accurate results. Therefore, we can infer that kernel size is dependent on the other hyper-parameters such as the number of conv layers.
+
+\subsection{Effect of Changing Number of Kernels}
+Thirdly, we have experimented with different values for the number of kernels in the conv layers except the last conv layer. The table below shows the accuracy results related to the different values for the number of kernels by fixing learning rate to $0.001$ and kernel size to $3x3$. When the number of conv layers is set to 1, there is only one conv layer in the model and it is required to have the number of kernels(number of output channels) parameter as 3. Because of this, we cannot observe the effect of changing the number of kernels by considering only one conv layer. So, for these experiments the number of conv layers is fixed to $2$.
+
+\begin{table}[H]
+\begin{center}
+\caption{Number of Kernels vs. Accuracy}
+\begin{tabular}{|c|c|}
+\hline
+ Number of Kernels & Accuracy \\
+\hline
+$2$ & $0.64$ \\
+\hline
+$4$ & $0.67$ \\
+\hline
+$8$ & $0.69$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+By looking at Table 3, we can infer that when the number of kernels is increased, the accuracy also increases.
+
+\subsection{Effect of Changing Learning Rate}
+Lastly, the effect of changing the learning rate is discussed. The table below represents the accuracy results for three different values of the learning rate by holding other hyper-parameters constant. The number of conv layers is fixed to $4$, the number of kernels is fixed to $2$ and kernel size is fixed to $3x3$.
+
+\begin{table}[H]
+\begin{center}
+\caption{Learning Rate vs. Accuracy}
+\begin{tabular}{|c|c|}
+\hline
+ Learning Rate & Accuracy \\
+\hline
+$0.001$ & $0.58$ \\
+\hline
+$0.01$ & $0.71$ \\
+\hline
+$0.1$ & $0.50$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+From this table, we can observe that when the learning rate is too small or too large, the accuracy results are not so high. When it is increased from a very small value to a medium value, the accuracy increases significantly. However, after a threshold, increasing the learning rate will result in overfitting. Thus, it will not perform well on unseen data.
 
 \section{Further Experiments (20 pts)}
-    Based on your qualitative results (do not forget to give them),
-    \begin{itemize}
-        \item Try adding a batch-norm layer (torch.nn.BatchNorm2d) into each convolutional layer. How does it affect the results, and, why? Keep it if it is beneficial. 
-        
-        \item Try adding a tanh activation function after the very last convolutional layer. How does it affect the results, and, why? Keep it if it is beneficial. 
-        
-        \item Try setting the number of channels parameter to 8. How does it affect the results, and, why? Keep it if it is beneficial. 
-        
-      
-    \end{itemize}
+After completing the experiments in the first section, we have experimented by adding a batch-normalization layer into each conv layer. The hyper-parameters are fixed as the following:
 
+\begin{itemize}
+	\item Number of conv layers: $4$
+	\item Number of kernels: $2$
+	\item Kernel size: $3x3$
+	\item Learning Rate: $0.01$
+\end{itemize}
+
+Example accuracy results are provided below for the models with and without batch normalization layers.
+
+\begin{table}[H]
+\begin{center}
+\caption{Batch-Norm Layer vs. Accuracy}
+\begin{tabular}{|c|c|}
+\hline
+ Batch-Norm Layer & Accuracy \\
+\hline
+with Batch-Norm Layer & $0.62$ \\
+\hline
+without Batch-Norm Layer & $0.71$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table} 
+
+From the table above, we can see that adding a batch-normalization layer into the conv layers has decreased the accuracy results. Therefore, in this case it is not a good idea to proceed with the batch normalization layers. WHYYYYYYY???????????
+
+Secondly, we have added a tanh activation function after the very last conv layer. Example accuracy results are provided below for the following configurations:
+
+\begin{itemize}
+	\item Number of conv layers: $2$
+	\item Number of kernels: $8$
+	\item Kernel size: $3x3$
+	\item Learning Rate: $0.01$
+\end{itemize}
+
+\begin{table}[H]
+\begin{center}
+\caption{Tanh Layer vs. Accuracy}
+\begin{tabular}{|c|c|}
+\hline
+ Tanh Layer & Accuracy \\
+\hline
+with Tanh Layer & $0.72$ \\
+\hline
+without Tanh Layer & $0.75$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table} 
+
+From the table above, we can infer that adding a Tanh activation function after the last conv layer is not a good idea since it decreases the accuracy results.
+WHYYYYYYY???????????
+
+Lastly, after completing these experiments, we have tried setting the number of channels(kernels) parameter to 16 to observe its effects on the accuracy of the model. The table below is provided for the following values of the hyper-parameters:
+
+\begin{itemize}
+	\item Number of conv layers: $2$
+	\item Number of kernels: $8$
+	\item Kernel size: $3x3$
+	\item Learning Rate: $0.01$
+\end{itemize}
+
+\begin{table}[H]
+\begin{center}
+\caption{Number of Kernels vs. Accuracy}
+\begin{tabular}{|c|c|}
+\hline
+ Number of Kernels & Accuracy \\
+\hline
+8 & $0.75$ \\
+\hline
+16 & $0.74$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table} 
+
+Form the table above, we can infer that increasing the number of kernels too much can lead to a decrease in the accuracy. This is due to the fact that as the number of kernels is increased, the model tends to learn more features from the image. Thus, if the model learns the irregularities in the image, this can lead to overfitting and after a threshold increasing the number of kernels is not beneficial.
+
+Therefore, it is a good idea not to set the number of kernels parameter to 16 and proceed with value 8.
 
 \section{Your Best Configuration (20 pts)}
-Using the best model that you obtain, report the following:
- 
-    \begin{itemize}
-        \item The automatically chosen number of epochs(what was your strategy?):
-        \item The plot of the training mean-squared error loss over epochs:
-        \item The  plot  of  the  validation  12-margin  error  over  epochs (see the3 text for details):
-        \item At least 5 qualitative results on the validation set, showing the prediction and the target colored image:
-        \item Discuss the advantages and disadvantages of the model, based on your qualitative results, and, briefly discuss potential ways to improve the model:
-    \end{itemize}
-    
+The hyper-parameters tuned for the best configuration of the model is given as the following:
+
+\begin{itemize}
+	\item Number of conv layers: $2$
+	\item Number of kernels: $8$
+	\item Kernel size: $3x3$
+	\item Learning Rate: $0.01$
+	\item using batch normalization
+	\item not using tanh after the last conv layer
+\end{itemize}
+
+The automatically chosen number of epochs is $100$ for this configuration because when the learning rate is $0.01$, the loss continues to decrease slowly for $100$ epochs. However, if the learning rate is chosen as $0.1$, the training is stopped at $52nd$ epoch. Since finding an optimal value for the learning rate is important, we have decided to proceed with $0.01$. The strategy that is followed to decide the optimal number of epochs is called early stopping. This is a very beneficial technique for avoiding overfitting. While implementing early stopping strategy, the MSE loss for the validation set which is calculated every 5 epochs is considered. When the current loss is larger than the previous loss, training is stopped and the best model is chosen as the model corresponding to the previous loss calculation. By performing this calculation every 5 epochs instead of every epoch, the training time is decreased a bit and the strategy is not deceived by the little fluctuations in the loss.
+
+The following graph shows the changes in the training MSE-loss and the validation MSE-loss over the epochs.
+
+$ GRAPH PLOT PLOT PLOT!!!!!!1$
+
+
+The following plot represents the 12-margin error over the epochs.
+
+$ GRAPH PLOT PLOT PLOT!!!!!!1$
+
+
+The figure below shows the grayscale and colored versions of 9 different images in the validation dataset and the corresponding predicted images. The images in the first line are the grayscale versions and the images in the last line are the target colored versions while the images in the middle line are the images that are predicted with the best model obtained.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=90mm]{best_config.png}}
+\caption{Image Predictions}
+\label{fig}
+\end{figure}
+
+Advantages/disadv of model........
+
+*************Discuss the advantages and disadvantages of the model, based on your qualitative results, and, briefly discuss potential ways to improve the model:
+    ****************
 \section{Your Results on the Test Set(30 pts)}
-This part will be obtained by us using the estimations you will provide. Please tell us how should we run your code in case of a problem:
+In order to run the best configuration, the code should be run as the way it is provided. It should be checked that in the $hps$ dictionary, the hyper-parameters are set as the following:
 
-\section{Additional Comments and References}
+\begin{itemize}
+	\item Number of conv layers: $2$
+	\item Number of kernels: $8$
+	\item Kernel size: $3x3$
+	\item Learning Rate: $0.01$
+\end{itemize}
 
-    (if there any)
-
-
-
-
+The results for the test set will be saved in a file named $estimations\_test.npy$.
 
 \end{document}
 
