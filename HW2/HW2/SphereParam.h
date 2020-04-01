@@ -1,5 +1,6 @@
 #include <Eigen/Dense>
 #include "Mesh.h"
+#include "Sampling.h"
 #include <set>
 #include <numeric>
 
@@ -16,6 +17,7 @@ private:
 	//vector<FreeVertex *> RelocateVertices(Mesh * mesh);
 	void RelocateVertices(Mesh * mesh);
 	float FindDistance(float* coords1, float* coords2);
+	float FindVectorLen(float *vec);
 	void GetSphereVertices(Mesh *mesh);
 	bool isNegated(float *a, float *b);
 	float Determinant(float *v0, float *v1, float *v2);
