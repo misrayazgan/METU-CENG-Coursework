@@ -48,7 +48,7 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 		{
 			if(mesh->tris[i]->v1i != minV && mesh->tris[i]->v2i != minV && mesh->tris[i]->v3i != minV)
 			{
-				float hitResult = triangleIntersection(mesh, i, ray, coords);
+				float hitResult = TriangleIntersection(mesh, i, ray, coords);
 				if(hitResult > 0)
 				{
 					// Find intersection point on the triangle.
@@ -66,8 +66,8 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 
 float * SphereParam::FindIntersectionPoint(float *center, float *vec, float t)
 {
-	// Normalize direction vector
-	float len = sqrt(pow(vec[0], 2) + pow(vec[1], 2) + pow(vec[2], 2));
+	// Normalize direction vector(vec)
+	float len = FindVectorLen(vec);
 	vec[0] /= len;
 	vec[1] /= len;
 	vec[2] /= len;
@@ -86,6 +86,11 @@ float SphereParam::FindDistance(float* coords1, float* coords2)
 	return dist;
 }
 
+float SphereParam::FindVectorLen(float *vec)
+{
+	return sqrt(pow(vec[0], 2) + pow(vec[1], 2) + pow(vec[2], 2));
+}
+
 // Move each vertex to the boundary of the sphere by simply normalizing the vector and scaling by the desired radius.
 void SphereParam::GetSphereVertices(Mesh *mesh)
 {
@@ -101,7 +106,7 @@ void SphereParam::GetSphereVertices(Mesh *mesh)
 		sphereCoords[2] = v->coords[2] - centroid->coords[2];
 
 		// Normalize the vector
-		float len = sqrt(pow(sphereCoords[0], 2) + pow(sphereCoords[1], 2) + pow(sphereCoords[2], 2));
+		float len = FindVectorLen(sphereCoords);
 		sphereCoords[0] /= len;
 		sphereCoords[1] /= len;
 		sphereCoords[2] /= len;
@@ -175,87 +180,76 @@ int SphereParam::FindCollisions(Mesh *mesh)
 	// Send rays from centroid to each vertex. If it hits another triangle, there is a collision.
 	for(int i = 0; i < mesh->verts.size(); i++)
 	{
+		// Keep neighboring triangles of the vertex.
+		vector<int> neighborTris = mesh->verts[i]->triList;
+		
 		float *centerToV = new float[3];
 		centerToV[0] = mesh->verts[i]->coords[0] - centroid->coords[0];
 		centerToV[1] = mesh->verts[i]->coords[1] - centroid->coords[1];
 		centerToV[2] = mesh->verts[i]->coords[2] - centroid->coords[2];
-		int n = 0;
+		
 		for(int j = 0; j < mesh->tris.size(); j++)
 		{
-			float res = triangleIntersection(mesh, j, centerToV, centroid->coords);
-			if(res > -1)
-				n++;
+			// If the selected vertex is not part of the triangle, try intersection with the triangle.
+			if(find(neigborTris.begin(), neighborTris.end(), j) != neighborTris.end())
+			{
+				float hitResult = TriangleIntersection(mesh, j, centerToV, centroid->coords);
+				if(hitResult > 0)
+					invertedTris++;
+			}
 		}
-		if(n > 1)
-			invertedTris++;
 	}
 
 	cout << "inverted triangles count: " << invertedTris << endl;
 	return invertedTris;
 }
 
-Vec3f SphereParam::subtract(const Vec3f &a, const Vec3f &b)
+float* SphereParam::Subtract(float *a, float *b)
 {
-	Vec3f a_minus_b;
-	a_minus_b.x = a.x - b.x;
-	a_minus_b.y = a.y - b.y;
-	a_minus_b.z = a.z - b.z;
-	return a_minus_b;
+	float *result = new float[3];
+	result[0] = a[0] - b[0];
+	result[1] = a[1] - b[1];
+	result[2] = a[2] - b[2];
+	return result;
 }
 
-float SphereParam::triangleIntersection(Mesh *mesh, int tr, float* vec, float *center)
+float SphereParam::TriangleIntersection(Mesh *mesh, int tr, float* vec, float *center)
 {
 	Triangle *tri = mesh->tris[tr];
-	Vec3f a;
-	a.x = mesh->verts[tri->v1i]->coords[0];
-	a.y = mesh->verts[tri->v1i]->coords[1];
-	a.z = mesh->verts[tri->v1i]->coords[2];
+	float *v1Coords = mesh->verts[tri->v1i]->coords;
+	float *v2Coords = mesh->verts[tri->v2i]->coords;
+	float *v3Coords = mesh->verts[tri->v3i]->coords;
 
-	Vec3f b;
-	b.x = mesh->verts[tri->v2i]->coords[0];
-	b.y = mesh->verts[tri->v2i]->coords[1];
-	b.z = mesh->verts[tri->v2i]->coords[2];
-
-	Vec3f c;
-	c.x = mesh->verts[tri->v3i]->coords[0];
-	c.y = mesh->verts[tri->v3i]->coords[1];
-	c.z = mesh->verts[tri->v3i]->coords[2];
-
-	Vec3f o;
-	o.x = center[0];
-	o.y = center[1];
-	o.z = center[2];
-
+	// Normalize direction vector(vec)
 	float len = sqrt(pow(vec[0], 2) + pow(vec[1], 2) + pow(vec[2], 2));
-	Vec3f d;
-	d.x = vec[0] / len;
-	d.y = vec[1] / len;
-	d.z = vec[2] / len;
+	vec[0] /= len;
+	vec[1] /= len;
+	vec[2] /= len;
 
-	Vec3f a_minus_b = subtract(a, b);
-	Vec3f a_minus_c = subtract(a, c);
-	Vec3f a_minus_o = subtract(a, o);
+	float *a_minus_b = Subtract(v1Coords, v2Coords);
+	float *a_minus_c = Subtract(v1Coords, v3Coords);
+	float *a_minus_o = Subtract(v1Coords, center);
 
-	float detA = determinant(a_minus_b, a_minus_c, d);
+	float detA = Determinant(a_minus_b, a_minus_c, vec);
 
 	if(detA == 0.0)
 	{
 		return -1;
 	}
 
-	float t = (determinant(a_minus_b, a_minus_c, a_minus_o))/detA;
+	float t = (Determinant(a_minus_b, a_minus_c, a_minus_o))/detA;
 	if(t <= 0.0)
 	{
 		return -1;
 	}
 
-	float gamma = (determinant(a_minus_b,a_minus_o, d))/detA;
+	float gamma = (Determinant(a_minus_b,a_minus_o, vec))/detA;
 	if(gamma < 0 || gamma > 1)
 	{
 		return -1;
 	}
 
-	float beta = (determinant(a_minus_o, a_minus_c, d))/detA;
+	float beta = (Determinant(a_minus_o, a_minus_c, vec))/detA;
 	if(beta < 0 || beta > (1 - gamma))
 	{
 		return -1;
@@ -264,11 +258,11 @@ float SphereParam::triangleIntersection(Mesh *mesh, int tr, float* vec, float *c
 	return t;
 }
 
-float SphereParam::determinant(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2)
+float SphereParam::Determinant(float *v0, float *v1, float *v2)
 {
-	return v0.x * (v1.y*v2.z - v2.y*v1.z)
-			+ v0.y * (v2.x*v1.z - v1.x*v2.z)
-			+ v0.z * (v1.x*v2.y - v1.y*v2.x);
+	return v0[0] * (v1[1] * v2[2] - v2[1] * v1[2])
+		+ v0[1] * (v2[0] * v1[2] - v1[0] * v2[2])
+		+ v0[2] * (v1[0] * v2[1] - v1[1] * v2[0]);
 }
 
 // Move each vertex to the center of its neighbors.
