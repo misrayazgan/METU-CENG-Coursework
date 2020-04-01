@@ -2,24 +2,41 @@
 
 FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 {
-	float *coords = new float[3];
-	coords[0] = 0;
-	coords[1] = 0;
-	coords[2] = 0;
+	// Find the average of all vertex coordinates.
+	float *center = new float[3];
+	center[0] = 0;
+	center[1] = 0;
+	center[2] = 0;
 
+	// burayi commentle asagiyi dene
 	for(int i = 0; i < mesh->verts.size(); i++)
 	{
-		coords[0] += mesh->verts[i]->coords[0];
-		coords[1] += mesh->verts[i]->coords[1];
-		coords[2] += mesh->verts[i]->coords[2];
+		center[0] += mesh->verts[i]->coords[0];
+		center[1] += mesh->verts[i]->coords[1];
+		center[2] += mesh->verts[i]->coords[2];
 	}
 
-	coords[0] /= mesh->verts.size();
-	coords[1] /= mesh->verts.size();
-	coords[2] /= mesh->verts.size();
+	center[0] /= mesh->verts.size();
+	center[1] /= mesh->verts.size();
+	center[2] /= mesh->verts.size();
+	
+	// Find an outside point by averaging farthest points.
+	// Sampling fps = new Sampling(5);
+	// vector<int> samples = fps->FPS(mesh);
+	//
+	// for(int i = 0; i < samples.size(); i++)
+	// {
+	//	center[0] += mesh->verts[samples[i]]->coords[0];
+	//	center[1] += mesh->verts[samples[i]]->coords[1];
+	//	center[2] += mesh->verts[samples[i]]->coords[2];
+	// }
+	
+	// center[0] /= samples.size();
+	// center[1] /= samples.size();
+	// center[2] /= samples.size();
 
 	if(isConvex == true)
-		return new FreeVertex(coords);
+		return new FreeVertex(center);
 	else
 	{
 		// Find the closest vertex to found center.
@@ -27,7 +44,7 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 		int minV;
 		for(int i = 0; i < mesh->verts.size(); i++)
 		{
-			float dist = FindDistance(coords, mesh->verts[i]->coords);
+			float dist = FindDistance(center, mesh->verts[i]->coords);
 			if(dist < minDist)
 			{
 				minDist = dist;
@@ -37,9 +54,9 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 
 		float *closestCoords = mesh->verts[minV]->coords;
 		float *ray = new float[3];
-		ray[0] = closestCoords[0] - coords[0];
-		ray[1] = closestCoords[1] - coords[1];
-		ray[2] = closestCoords[2] - coords[2];
+		ray[0] = closestCoords[0] - center[0];
+		ray[1] = closestCoords[1] - center[1];
+		ray[2] = closestCoords[2] - center[2];
 
 		float *concaveCenter = new float[3];
 
@@ -48,11 +65,11 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 		{
 			if(mesh->tris[i]->v1i != minV && mesh->tris[i]->v2i != minV && mesh->tris[i]->v3i != minV)
 			{
-				float hitResult = TriangleIntersection(mesh, i, ray, coords);
+				float hitResult = TriangleIntersection(mesh, i, ray, center);
 				if(hitResult > 0)
 				{
 					// Find intersection point on the triangle.
-					float *hitPoint = FindIntersectionPoint(coords, ray, hitResult);
+					float *hitPoint = FindIntersectionPoint(center, ray, hitResult);
 					concaveCenter[0] = (closestCoords[0] + hitPoint[0]) / 2;
 					concaveCenter[1] = (closestCoords[1] + hitPoint[1]) / 2;
 					concaveCenter[2] = (closestCoords[2] + hitPoint[2]) / 2;
