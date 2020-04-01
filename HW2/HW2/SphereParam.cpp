@@ -21,7 +21,7 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 	center[2] /= mesh->verts.size();
 	
 	// Find an outside point by averaging farthest points.
-	// Sampling fps = new Sampling(5);
+	// Sampling *fps = new Sampling(5);
 	// vector<int> samples = fps->FPS(mesh);
 	//
 	// for(int i = 0; i < samples.size(); i++)
