@@ -243,8 +243,6 @@ int SphereParam::FindCollisions(Mesh *mesh)
 			}
 		}
 	}
-
-	cout << "inverted triangles count: " << invertedTris << endl;
 	return invertedTris;
 }
 
