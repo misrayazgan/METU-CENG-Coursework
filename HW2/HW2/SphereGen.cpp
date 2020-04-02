@@ -38,6 +38,7 @@ vector<int> SphereGen::FindPoleVertices(Mesh *mesh)
 
 vector<int> SphereGen::FindCutVertices(Mesh *mesh)
 {
+	// Find start and end points of the cut.
 	vector<int> poles = FindPoleVertices(mesh);
 	Dijkstra *d = new Dijkstra();
 	vector<int> cutVertices = d->GetShortestPath(mesh, poles[0], poles[1]);
@@ -88,26 +89,30 @@ pair<vector<int>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 {
 	// Store global Ids for cut vertices and triangles.
 	vector<int> cutVertices = FindCutVertices(mesh);
+	vector<int> cutVertsWithoutStartEnd = cutVertices;
+	cutVertsWithoutStartEnd.erase(cutVertsWithoutStartEnd.begin());
+	cutVertsWithoutStartEnd.erase(cutVertsWithoutStartEnd.end());
 	set<int> cutTris;
 
 	// Duplicate cut vertices except from the start and the end.
 	// Find all the triangles adjacent to the cut vertices.
 	for(int i = 1; i < cutVertices.size() - 1; i++)
 	{
-		vector<int> triList = mesh->verts[cutVertices[i]]->triList;
+		vector<int> neighborTris = mesh->verts[cutVertices[i]]->triList;
 
-		for(int j = 0; j < triList.size(); j++)
+		for(int j = 0; j < neighborTris.size(); j++)
 		{
-			cutTris.insert(triList[j]);
+			cutTris.insert(neighborTris[j]);
 		}
 	}
 
 	int label = 1;
-	vector<int> triLabels;
+	// Store (triId, triLabel) pairs
+	vector<pair<int, int>> triLabels;
 	vector<int> consideredTris;
 		
 	// Label the first triangle (cutTris[0])
-	triLabels.push_back(label);
+	triLabels.push_back(make_pair(0, label));
 	consideredTris.push_back(*next(cutTris.begin(), 0));
 
 	// Consider all triangles around the cut.
@@ -122,18 +127,40 @@ pair<vector<int>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 			bool isCutEdge = IsCutEdge(cutVertices, commonVerts);
 			if(isCutEdge == true)
 			{
+				// If common edge is a cut edge
 				// Label different than consideredTris[k]
 				triLabel = !triLabels[k];
 				break;
 			}
+			else if(isCutEdge == false && commonVerts.size() == 2)
+			{
+				// If common edge is not a cut edge
+				// Label same with consideredTris[k]
+				triLabel = triLabels[k];
+			}
 			else
 			{
-				triLabel = triLabels[k];
+				// If triangles have no edge in common(maybe common vertex).
+				// Cannot decide the label, skip the triangle.
 			}
 		}
 
-		triLabels.push_back(triLabel);
+		triLabels.push_back(make_pair(cutTri, triLabel));
 	}
+	
+	vector<int> notLabeled;
+	// Check if all cutTriIds are labeled.
+	for(int i = 0; i < triLabels.size(); i++)
+	{
+		// Wrong but works for now
+		if(triLabels[i].first != cutTris[i])
+		{
+			notLabeled.push_back(cutTris[i]);
+		}
+	}
+	
+	cout << "number of cut triangles: " << cutTris.size() << endl;
+	cout << "number of not labeled cut triangles: " << notLabeled.size() << endl;
 
 	return make_pair(triLabels, cutTris);
 	
