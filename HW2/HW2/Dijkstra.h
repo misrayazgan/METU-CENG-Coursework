@@ -1,3 +1,6 @@
+#ifndef DIJKSTRA_H
+#define DIJKSTRA_H
+
 #include "Mesh.h"
 #include <queue>
 #include <functional>
@@ -28,3 +31,4 @@ private:
 };
 
 
+#endif

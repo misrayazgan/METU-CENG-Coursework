@@ -2,43 +2,55 @@
 
 FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 {
-	// Find the average of all vertex coordinates.
 	float *center = new float[3];
 	center[0] = 0;
 	center[1] = 0;
 	center[2] = 0;
 
-	// burayi commentle asagiyi dene
-	for(int i = 0; i < mesh->verts.size(); i++)
-	{
-		center[0] += mesh->verts[i]->coords[0];
-		center[1] += mesh->verts[i]->coords[1];
-		center[2] += mesh->verts[i]->coords[2];
-	}
-
-	center[0] /= mesh->verts.size();
-	center[1] /= mesh->verts.size();
-	center[2] /= mesh->verts.size();
-	
-	// Find an outside point by averaging farthest points.
-	// Sampling *fps = new Sampling(5);
-	// vector<int> samples = fps->FPS(mesh);
-	//
-	// for(int i = 0; i < samples.size(); i++)
-	// {
-	//	center[0] += mesh->verts[samples[i]]->coords[0];
-	//	center[1] += mesh->verts[samples[i]]->coords[1];
-	//	center[2] += mesh->verts[samples[i]]->coords[2];
-	// }
-	
-	// center[0] /= samples.size();
-	// center[1] /= samples.size();
-	// center[2] /= samples.size();
-
 	if(isConvex == true)
+	{
+		// Find the average of all vertex coordinates.
+		for(int i = 0; i < mesh->verts.size(); i++)
+		{
+			center[0] += mesh->verts[i]->coords[0];
+			center[1] += mesh->verts[i]->coords[1];
+			center[2] += mesh->verts[i]->coords[2];
+		}
+
+		center[0] /= mesh->verts.size();
+		center[1] /= mesh->verts.size();
+		center[2] /= mesh->verts.size();
+
 		return new FreeVertex(center);
+	}	
 	else
 	{
+		// Find an outside point by averaging farthest points.
+		Sampling *fps = new Sampling(8);
+		vector<int> samples = fps->FPS(mesh);
+	
+		for(int i = 0; i < samples.size(); i++)
+		{
+			center[0] += mesh->verts[samples[i]]->coords[0];
+			center[1] += mesh->verts[samples[i]]->coords[1];
+			center[2] += mesh->verts[samples[i]]->coords[2];
+		}
+	
+		center[0] /= samples.size();
+		center[1] /= samples.size();
+		center[2] /= samples.size();
+
+		/*for(int i = 0; i < mesh->verts.size(); i++)
+		{
+			center[0] += mesh->verts[i]->coords[0];
+			center[1] += mesh->verts[i]->coords[1];
+			center[2] += mesh->verts[i]->coords[2];
+		}
+
+		center[0] /= mesh->verts.size();
+		center[1] /= mesh->verts.size();
+		center[2] /= mesh->verts.size();*/
+
 		// Find the closest vertex to found center.
 		float minDist = numeric_limits<float>::infinity();;
 		int minV;
@@ -59,6 +71,7 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 		ray[2] = closestCoords[2] - center[2];
 
 		float *concaveCenter = new float[3];
+		bool hitHappened = false;
 
 		// Triangle intersection
 		for(int i = 0; i < mesh->tris.size(); i++)
@@ -73,8 +86,24 @@ FreeVertex* SphereParam::FindCentroid(Mesh *mesh)
 					concaveCenter[0] = (closestCoords[0] + hitPoint[0]) / 2;
 					concaveCenter[1] = (closestCoords[1] + hitPoint[1]) / 2;
 					concaveCenter[2] = (closestCoords[2] + hitPoint[2]) / 2;
+					hitHappened = true;
 				}
 			}
+		}
+
+		if(hitHappened == false)
+		{
+			for(int i = 0; i < mesh->verts.size(); i++)
+			{
+				center[0] += mesh->verts[i]->coords[0];
+				center[1] += mesh->verts[i]->coords[1];
+				center[2] += mesh->verts[i]->coords[2];
+			}
+
+			center[0] /= mesh->verts.size();
+			center[1] /= mesh->verts.size();
+			center[2] /= mesh->verts.size();
+			concaveCenter = center;
 		}
 
 		return new FreeVertex(concaveCenter);
@@ -138,36 +167,6 @@ void SphereParam::GetSphereVertices(Mesh *mesh)
 	}
 }
 
-bool SphereParam::isNegated(float *a, float *b)
-{
-	if(a[0] >= 0 && a[1] >= 0 && a[2] >= 0)
-		if(b[0] <= 0 && b[1] <= 0 && b[2] <= 0)
-			return true;
-	if(a[0] >= 0 && a[1] >= 0 && a[2] <= 0)
-		if(b[0] <= 0 && b[1] <= 0 && b[2] >= 0)
-			return true;
-	if(a[0] >= 0 && a[1] <= 0 && a[2] >= 0)
-		if(b[0] <= 0 && b[1] >= 0 && b[2] <= 0)
-			return true;
-	if(a[0] >= 0 && a[1] <= 0 && a[2] <= 0)
-		if(b[0] <= 0 && b[1] >= 0 && b[2] >= 0)
-			return true;
-	if(a[0] <= 0 && a[1] >= 0 && a[2] >= 0)
-		if(b[0] >= 0 && b[1] <= 0 && b[2] <= 0)
-			return true;
-	if(a[0] <= 0 && a[1] >= 0 && a[2] <= 0)
-		if(b[0] >= 0 && b[1] <= 0 && b[2] >= 0)
-			return true;
-	if(a[0] <= 0 && a[1] <= 0 && a[2] >= 0)
-		if(b[0] >= 0 && b[1] >= 0 && b[2] <= 0)
-			return true;
-	if(a[0] <= 0 && a[1] <= 0 && a[2] <= 0)
-		if(b[0] >= 0 && b[1] >= 0 && b[2] >= 0)
-			return true;
-
-	return false;
-}
-
 int SphereParam::FindCollisions(Mesh *mesh)
 {
 	//// Store the original face normals.
@@ -182,12 +181,12 @@ int SphereParam::FindCollisions(Mesh *mesh)
 	//mesh->computeNormals();
 	
 	// Find the centers of triangles after mapping to sphere
-	vector<float *> centers;
+	/*vector<float *> centers;
 	for(int i = 0; i < mesh->tris.size(); i++)
 	{
-		float *v1Coords = mesh->tris[i]->v1i->coords;
-		float *v2Coords = mesh->tris[i]->v2i->coords;
-		float *v3Coords = mesh->tris[i]->v3i->coords;
+		float *v1Coords = mesh->verts[mesh->tris[i]->v1i]->coords;
+		float *v2Coords = mesh->verts[mesh->tris[i]->v2i]->coords;
+		float *v3Coords = mesh->verts[mesh->tris[i]->v3i]->coords;
 		
 		float *center = new float[3];
 		center[0] = (v1Coords[0] + v2Coords[0] + v3Coords[0]) / 3;
@@ -205,20 +204,7 @@ int SphereParam::FindCollisions(Mesh *mesh)
 		{
 			invertedTris++;
 		}
-	}
-
-	//// Store the triangles that are not correctly oriented.
-	//vector<int> invertedTris;
-	//for(int i = 0; i < mesh->tris.size(); i++)
-	//{
-	//	float *newNormal = mesh->tris[i]->normal;
-	//	if(!(oldNormals[i][0] == newNormal[0] && oldNormals[i][1] == newNormal[1] && oldNormals[i][2] == newNormal[2]))
-	//		int a = 0;
-	//	if(isNegated(oldNormals[i], newNormal) == true)
-	//	{
-	//		invertedTris.push_back(i);
-	//	}
-	//}
+	}*/
 
 	int invertedTris = 0;
 	// Send rays from centroid to each vertex. If it hits another triangle, there is a collision.
@@ -235,7 +221,7 @@ int SphereParam::FindCollisions(Mesh *mesh)
 		for(int j = 0; j < mesh->tris.size(); j++)
 		{
 			// If the selected vertex is not part of the triangle, try intersection with the triangle.
-			if(find(neigborTris.begin(), neighborTris.end(), j) != neighborTris.end())
+			if(find(neighborTris.begin(), neighborTris.end(), j) != neighborTris.end())
 			{
 				float hitResult = TriangleIntersection(mesh, j, centerToV, centroid->coords);
 				if(hitResult > 0)
@@ -335,62 +321,6 @@ void SphereParam::RelocateVertices(Mesh *mesh)
 	}
 }
 
-//void SphereParam::RelocateVertices(Mesh *mesh)
-//{
-//	int numberOfVertices = mesh->verts.size();
-//
-//	Eigen::MatrixXf W = Eigen::MatrixXf::Zero(numberOfVertices, numberOfVertices);
-//	Eigen::VectorXf bx(numberOfVertices);
-//	Eigen::VectorXf by(numberOfVertices);
-//	Eigen::VectorXf bz(numberOfVertices);
-//
-//	for(int i = 0; i < numberOfVertices; i++)
-//	{
-//		if(i == 0)
-//		{
-//			bx(i) = mesh->verts[i]->coords[0];
-//			by(i) = mesh->verts[i]->coords[1];
-//			bz(i) = mesh->verts[i]->coords[2];
-//		}
-//		else
-//		{
-//			bx(i) = 0;
-//			by(i) = 0;
-//			bz(i) = 0;
-//		}
-//
-//		for(int j = 0; j < numberOfVertices; j++)
-//		{
-//			if(mesh->isNeighbor(i, j) == true)
-//			{
-//				W(i, j) = 1;
-//			}
-//		}
-//	}
-//
-//	for(int i = 0; i < numberOfVertices; i++)
-//	{
-//		// Total value of the row
-//		W(i, i) = -1 * W.rowwise().sum()(i);
-//	}
-//
-//	// xx and xy store the coordinates of the new vertices which lie on the circle.
-//	// xx and xy are ordered with respect to the global idx of the vertices.
-//	Eigen::VectorXf xx = W.lu().solve(bx);
-//	Eigen::VectorXf xy = W.lu().solve(by);
-//	Eigen::VectorXf xz = W.lu().solve(bz);
-//
-//	
-//	for(int i = 0; i < numberOfVertices; i++)
-//	{
-//		float *coords = new float[3];
-//		coords[0] = xx(i);
-//		coords[1] = xy(i);
-//		coords[2] = xz(i);
-//		mesh->verts[i]->coords = coords;
-//	}
-//}
-
 void SphereParam::SphericalParameterization(Mesh *mesh)
 {
 	// Find centroid of the mesh.
@@ -402,23 +332,20 @@ void SphereParam::SphericalParameterization(Mesh *mesh)
 	cout << centroid->coords[2] << endl;
 
 	GetSphereVertices(mesh);
-	
-	/*int invertedTris = FindCollisions(mesh);
-	while(invertedTris > 0)
+	RelocateVertices(mesh);
+	GetSphereVertices(mesh);
+
+	//int invertedTris = FindCollisions(mesh);
+	//while(invertedTris > 0)
+	for(int i = 0; i < 30; i++)
 	{
-		cout << "Number of inverted triangles: " << invertedTris << endl;
+		//cout << "Number of inverted triangles: " << invertedTris << endl;
 		cout << "Relocating vertices..." << endl;
 		RelocateVertices(mesh);
 		GetSphereVertices(mesh);
 		// Recalculate the number of inverted triangles.
-		invertedTris = FindCollisions(mesh);
-	}*/
-	
-	/*for(int i = 0; i < 45; i++)
-	{
-		RelocateVertices(mesh);
-		GetSphereVertices(mesh);
-	}*/
+		//invertedTris = FindCollisions(mesh);
+	}
 
 	//FindCollisions(mesh);
 }

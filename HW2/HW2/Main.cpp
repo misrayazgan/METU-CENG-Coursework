@@ -1,7 +1,7 @@
 #include "Parameterization.h"
 #include <iomanip>
-#include "SphereParam.h"
 #include "SphereGen.h"
+#include "SphereParam.h"
 #include "Painter.h"
 
 #include <Inventor/Win/SoWin.h>
@@ -103,7 +103,7 @@ int main(int, char ** argv)
 		/*****************Spherical Parameterization******************/
 		cout << "4: Spherical Parameterization of Closed Mesh" << endl;
 
-		bool isConvex = true;
+		bool isConvex = false;
 		if(filename[0] == '3' || filename[0] == '7')
 		{
 			isConvex = true;
@@ -111,9 +111,9 @@ int main(int, char ** argv)
 
 		SphereParam *sphereParam = new SphereParam(isConvex);
 		FreeVertex *centroid = sphereParam->FindCentroid(mesh);
-		root->addChild(painter->getSphereSepByCoord(mesh, centroid->coords, 2.0f));
-		root->addChild(painter->getShapeSep(mesh));
-		/*sphereParam->SphericalParameterization(mesh);
+		/*root->addChild(painter->getSphereSepByCoord(mesh, centroid->coords, 1.0f));
+		root->addChild(painter->getShapeSep(mesh));*/
+		sphereParam->SphericalParameterization(mesh);
 		root->addChild(painter->getShapeSep(mesh));
 		for(int i = 0; i < mesh->edges.size(); i++)
 		{
@@ -122,7 +122,7 @@ int main(int, char ** argv)
 			float *v1coords = mesh->verts[v1]->coords;
 			float *v2coords = mesh->verts[v2]->coords;
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, blue, true));
-		}*/
+		}
 	}
 	else if(taskId == 5)
 	{
