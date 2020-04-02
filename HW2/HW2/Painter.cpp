@@ -111,11 +111,11 @@ SoSeparator* Painter::getSphereSep(Mesh* mesh, int v, int i)
 	//material
 	SoMaterial* ma = new SoMaterial;
 	if (i == 0)
-		ma->diffuseColor.setValue(SbColor(0.0f, 0.0f, 0.7f));
+		ma->diffuseColor.setValue(SbColor(0.0f, 0.0f, 0.7f));	// blue
 	else if (i == 1)
-		ma->diffuseColor.setValue(SbColor(0.7f, 0.1f, 0.7f));
+		ma->diffuseColor.setValue(SbColor(0.7f, 0.1f, 0.7f));	// pink
 	else if (i == 2)
-		ma->diffuseColor.setValue(SbColor(0.0f, 0.7f, 0.0f));
+		ma->diffuseColor.setValue(SbColor(0.0f, 0.7f, 0.0f));	// green
 	else if (i == 3)
 		ma->diffuseColor.setValue(SbColor(0.7f, 0.0f, 0.7f));
 	else if (i == 4)
@@ -142,7 +142,7 @@ SoSeparator* Painter::getSphereSepByCoord(Mesh* mesh, float *coords, float radiu
 
 	//material
 	SoMaterial* ma = new SoMaterial;
-	ma->diffuseColor.setValue(SbColor(0.0f, 0.7f, 0.0f));
+	ma->diffuseColor.setValue(SbColor(0.0f, 0.7f, 0.0f));	// green
 
 	sphereSep->addChild(ma);
 

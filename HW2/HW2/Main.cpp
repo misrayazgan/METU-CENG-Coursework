@@ -29,12 +29,16 @@ int main(int, char ** argv)
 	cout << "Enter the id for the desired task:" << endl;
 	cin >> taskId;
 
-	char filename[20];
-    cout << "Enter filename:" << endl;
-    cin >> setw(20) >> filename;
-
 	Mesh *mesh = new Mesh();
-	mesh->loadOff(filename);
+	char filename[20];
+	if(taskId != 6 && taskId != 7)
+	{
+		cout << "Enter filename:" << endl;
+		cin >> setw(20) >> filename;
+		mesh->loadOff(filename);
+	}
+
+	
 
 	cout << "Number of Vertices: " << mesh->verts.size() << endl;
 	cout << "Number of Edges: " << mesh->edges.size() << endl;
@@ -150,49 +154,66 @@ int main(int, char ** argv)
 		cout << "7: Disk Parameterization of Generated Sphere" << endl;
 
 		SphereGen *sphere = new SphereGen();
-		Mesh *tetrahedronSphere = sphere->GenerateSphere();
+		mesh = sphere->GenerateSphere();
+		//mesh->loadOff("sphere.off");
 
-		for(int i = 0; i < tetrahedronSphere->edges.size(); i++)
+		// Draw the sphere generated from tetrahedron.
+		for(int i = 0; i < mesh->edges.size(); i++)
 		{
-			Edge *edge = tetrahedronSphere->edges[i];
-			float *v1coords = tetrahedronSphere->verts[edge->v1i]->coords;
-			float *v2coords = tetrahedronSphere->verts[edge->v2i]->coords;
-			root->addChild(painter->drawEdge(tetrahedronSphere, v1coords, v2coords, color, false));
+			Edge *edge = mesh->edges[i];
+			float *v1coords = mesh->verts[edge->v1i]->coords;
+			float *v2coords = mesh->verts[edge->v2i]->coords;
+			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
 		}
 
-		vector<int> poleVertices = sphere->FindPoleVertices(tetrahedronSphere);
-		for(int i = 0; i < poleVertices.size(); i++)
-		{
-			root->addChild(painter->getSphereSepByCoord(tetrahedronSphere, tetrahedronSphere->verts[poleVertices[i]]->coords, 0.01f));
-		}
+		// Draw the pole vertices(cut start and end).
+		// vector<int> poleVertices = sphere->FindPoleVertices(mesh);
+		// for(int i = 0; i < poleVertices.size(); i++)
+		// {
+		// 	root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[poleVertices[i]]->coords, 0.01f));
+		// }
 
-		vector<int> cutVertices = sphere->FindCutVertices(tetrahedronSphere);
+		// Draw edges between the cut vertices.
+		vector<int> cutVertices = sphere->FindCutVertices(mesh);
 		for(int i = 0; i < cutVertices.size() - 1; i++)
 		{
-			float *v1coords = tetrahedronSphere->verts[cutVertices[i]]->coords;
-			float *v2coords = tetrahedronSphere->verts[cutVertices[i + 1]]->coords;
+			float *v1coords = mesh->verts[cutVertices[i]]->coords;
+			float *v2coords = mesh->verts[cutVertices[i + 1]]->coords;
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, blue, true));
 		}
+		// Draw spheres to cut vertices.
 		for(int i = 0; i < cutVertices.size(); i++)
 		{
-			root->addChild(painter->getSphereSepByCoord(tetrahedronSphere, tetrahedronSphere->verts[cutVertices[i]]->coords, 0.01f));
+			int v = cutVertices[i];
+			root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.02f));
+			/*vector<int> triList = mesh->verts[v]->triList;
+			for(int j  = 0; j < mesh->verts[v]->triList.size(); j++)
+			{
+				int tri = mesh->verts[v]->triList[j];
+				int v1 = mesh->tris[tri]->v1i;
+				int v2 = mesh->tris[tri]->v2i;
+				int v3 = mesh->tris[tri]->v3i;
+				root->addChild(painter->getSphereSep(mesh, v1, 0));
+				root->addChild(painter->getSphereSep(mesh, v2, 1));
+				root->addChild(painter->getSphereSep(mesh, v3, 2));
+			}*/
 		}
 
-		pair<vector<int>, set<int>> res = sphere->CreateCut(tetrahedronSphere);
-		vector<int> triLabels = res.first;
-		set<int> cutTris = res.second;
-		cout << cutTris.size() << endl;
-		cout << triLabels.size() << endl;
-		cout << cutVertices.size() << endl;
+		//pair<vector<pair<int, int>>, set<int>> cutResult = sphere->CreateCut(mesh);
+		//vector<pair<int, int>> triLabels = cutResult.first;
+		//set<int> cutTriIds = cutResult.second;
+		//cout << cutTriIds.size() << endl;
+		//cout << triLabels.size() << endl;
+		//cout << cutVertices.size() << endl;
 
-		for(int i = 0; i < cutTris.size(); i++)
-		{
-			int cutTri = *next(cutTris.begin(), i);
-			Triangle *tri = tetrahedronSphere->tris[cutTri];
-			root->addChild(painter->getSphereSep(tetrahedronSphere, tri->v1i, 0)); //triLabels[i]));
-			root->addChild(painter->getSphereSep(tetrahedronSphere, tri->v2i, 0)); //triLabels[i]));
-			root->addChild(painter->getSphereSep(tetrahedronSphere, tri->v3i, 0)); //triLabels[i]));
-		}
+		//for(int i = 0; i < cutTriIds.size(); i++)
+		//{
+		//	int cutTriId = *next(cutTriIds.begin(), i);
+		//	Triangle *tri = mesh->tris[cutTriId];
+		//	root->addChild(painter->getSphereSep(mesh, tri->v1i, 1)); //triLabels[i].second));
+		//	root->addChild(painter->getSphereSep(mesh, tri->v2i, 1)); //triLabels[i].second));
+		//	root->addChild(painter->getSphereSep(mesh, tri->v3i, 1)); //triLabels[i].second));
+		//}
 	}
 
 	// Stuff to be drawn must be added to the root.
