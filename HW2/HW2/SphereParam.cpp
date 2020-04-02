@@ -320,12 +320,10 @@ void SphereParam::SphericalParameterization(Mesh *mesh)
 {
 	// Find centroid of the mesh.
 	centroid = FindCentroid(mesh);
-
-	cout << "centroid" << endl;
-	cout << centroid->coords[0] << endl;
-	cout << centroid->coords[1] << endl;
-	cout << centroid->coords[2] << endl;
-
+	cout << "centroid.x = " << centroid->coords[0] << endl;
+	cout << "centroid.y = " << centroid->coords[1] << endl;
+	cout << "centroid.z = " << centroid->coords[2] << endl;
+	
 	GetSphereVertices(mesh);
 	RelocateVertices(mesh);
 	GetSphereVertices(mesh);
@@ -341,6 +339,4 @@ void SphereParam::SphericalParameterization(Mesh *mesh)
 		// Recalculate the number of inverted triangles.
 		//invertedTris = FindCollisions(mesh);
 	}
-
-	//FindCollisions(mesh);
 }
