@@ -120,6 +120,7 @@ pair<vector<int>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 	{
 		int cutTri = *next(cutTris.begin(), i);
 		int triLabel;
+		bool labelFound = false;
 
 		for(int k = 0; k < consideredTris.size(); k++)
 		{
@@ -130,6 +131,7 @@ pair<vector<int>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 				// If common edge is a cut edge
 				// Label different than consideredTris[k]
 				triLabel = !triLabels[k];
+				labelFound = true;
 				break;
 			}
 			else if(isCutEdge == false && commonVerts.size() == 2)
@@ -137,19 +139,25 @@ pair<vector<int>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 				// If common edge is not a cut edge
 				// Label same with consideredTris[k]
 				triLabel = triLabels[k];
+				labelFound = true;
 			}
 			else
 			{
 				// If triangles have no edge in common(maybe common vertex).
 				// Cannot decide the label, skip the triangle.
+				labelFound = false;
 			}
 		}
 
-		triLabels.push_back(make_pair(cutTri, triLabel));
+		if(labelFound = true)
+		{
+			triLabels.push_back(make_pair(cutTri, triLabel));
+		}
 	}
 	
+	/***************to be deleted**************/
 	vector<int> notLabeled;
-	// Check if all cutTriIds are labeled.
+	// Check if all cutTriIds are labeled. (might just check sizes of trilabels and cuttris)
 	for(int i = 0; i < triLabels.size(); i++)
 	{
 		// Wrong but works for now
@@ -161,6 +169,45 @@ pair<vector<int>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 	
 	cout << "number of cut triangles: " << cutTris.size() << endl;
 	cout << "number of not labeled cut triangles: " << notLabeled.size() << endl;
+	/***************to be deleted**************/
+	
+	/***************If all the cut triangles are found and labeled, continue***************/
+	// Store triangle Ids wrt labels.
+	vector<int> labeled0;
+	vector<int> labeled1;
+	
+	for(int i = 0; i < triLabels.size(); i++)
+	{
+		if(triLabels[i].second == 0)
+		{
+			labeled0.push_back(triLabels[i].first);
+		}
+		else	
+		{
+			labeled1.push_back(triLabels[i].first);
+		}
+	}
+	
+	// Add duplicate cut vertices.
+	vector<int> duplicateVertices;
+	for(int i = 0; i < cutVertsWithoutStartEnd.size(); i++)
+	{
+		int id = mesh->verts.size();
+		float *coords = mesh->verts[cutVertsWithoutStartEnd[i]]->coords;
+		mesh->addVertex(coords[0], coords[1], coords[2]);
+		duplicateVertices.push_back(id);
+	}
+	
+	// Arrange triangle vertex relationships.
+	for(int i = 0; i < labeled0.size(); i++)
+	{
+		int v1 = mesh->tris[labeled0[i]]->v1i;
+		int v2 = mesh->tris[labeled0[i]]->v2i;
+		int v3 = mesh->tris[labeled0[i]]->v3i;
+		
+		if(v1 
+	}
+	
 
 	return make_pair(triLabels, cutTris);
 	
