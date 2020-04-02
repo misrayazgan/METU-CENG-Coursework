@@ -152,6 +152,7 @@ int main(int, char ** argv)
 		SphereGen *sphere = new SphereGen();
 		Mesh *tetrahedronSphere = sphere->GenerateSphere();
 
+		// Draw the sphere generated from tetrahedron.
 		for(int i = 0; i < tetrahedronSphere->edges.size(); i++)
 		{
 			Edge *edge = tetrahedronSphere->edges[i];
@@ -160,12 +161,14 @@ int main(int, char ** argv)
 			root->addChild(painter->drawEdge(tetrahedronSphere, v1coords, v2coords, color, false));
 		}
 
-		vector<int> poleVertices = sphere->FindPoleVertices(tetrahedronSphere);
-		for(int i = 0; i < poleVertices.size(); i++)
-		{
-			root->addChild(painter->getSphereSepByCoord(tetrahedronSphere, tetrahedronSphere->verts[poleVertices[i]]->coords, 0.01f));
-		}
+		// Draw the pole vertices(cut start and end).
+		// vector<int> poleVertices = sphere->FindPoleVertices(tetrahedronSphere);
+		// for(int i = 0; i < poleVertices.size(); i++)
+		// {
+		// 	root->addChild(painter->getSphereSepByCoord(tetrahedronSphere, tetrahedronSphere->verts[poleVertices[i]]->coords, 0.01f));
+		// }
 
+		// Draw edges between the cut vertices.
 		vector<int> cutVertices = sphere->FindCutVertices(tetrahedronSphere);
 		for(int i = 0; i < cutVertices.size() - 1; i++)
 		{
@@ -173,22 +176,23 @@ int main(int, char ** argv)
 			float *v2coords = tetrahedronSphere->verts[cutVertices[i + 1]]->coords;
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, blue, true));
 		}
+		// Draw spheres to cut vertices.
 		for(int i = 0; i < cutVertices.size(); i++)
 		{
 			root->addChild(painter->getSphereSepByCoord(tetrahedronSphere, tetrahedronSphere->verts[cutVertices[i]]->coords, 0.01f));
 		}
 
-		pair<vector<int>, set<int>> res = sphere->CreateCut(tetrahedronSphere);
-		vector<int> triLabels = res.first;
-		set<int> cutTris = res.second;
-		cout << cutTris.size() << endl;
+		pair<vector<int>, set<int>> cutResult = sphere->CreateCut(tetrahedronSphere);
+		vector<int> triLabels = cutResult.first;
+		set<int> cutTriIds = cutResult.second;
+		cout << cutTriIds.size() << endl;
 		cout << triLabels.size() << endl;
 		cout << cutVertices.size() << endl;
 
-		for(int i = 0; i < cutTris.size(); i++)
+		for(int i = 0; i < cutTriIds.size(); i++)
 		{
-			int cutTri = *next(cutTris.begin(), i);
-			Triangle *tri = tetrahedronSphere->tris[cutTri];
+			int cutTriId = *next(cutTriIds.begin(), i);
+			Triangle *tri = tetrahedronSphere->tris[cutTriId];
 			root->addChild(painter->getSphereSep(tetrahedronSphere, tri->v1i, 0)); //triLabels[i]));
 			root->addChild(painter->getSphereSep(tetrahedronSphere, tri->v2i, 0)); //triLabels[i]));
 			root->addChild(painter->getSphereSep(tetrahedronSphere, tri->v3i, 0)); //triLabels[i]));
