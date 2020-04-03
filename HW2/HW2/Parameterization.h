@@ -20,8 +20,7 @@ public:
 	vector<FreeVertex *> DiskParameterization(Mesh *mesh);
 	set<int> FindBoundaryVertices(Mesh *mesh);
 	vector<FreeVertex *> GetCircleVertices(int numberOfVertices);
-	vector<FreeVertex *> ClosedMeshParam(Mesh *mesh);
-	vector<FreeVertex *> SphereParam(Mesh *mesh, vector<int> boundaryVertices);
+	vector<FreeVertex *> ParamClosedMesh(Mesh *mesh, set<int> boundaryVertices);
 private:
 	WeightEnum weight;
 	vector<bool> isBoundary;
