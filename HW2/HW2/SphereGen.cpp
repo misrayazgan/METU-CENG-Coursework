@@ -36,13 +36,12 @@ vector<int> SphereGen::FindPoleVertices(Mesh *mesh)
 	return poles;
 }
 
-vector<int> SphereGen::FindCutVertices(Mesh *mesh)
+void SphereGen::FindCutVertices(Mesh *mesh, vector<int> &cutVertices)
 {
 	// Find start and end points of the cut.
 	vector<int> poles = FindPoleVertices(mesh);
 	Dijkstra *d = new Dijkstra();
-	vector<int> cutVertices = d->GetShortestPath(mesh, poles[0], poles[1]);
-	return cutVertices;
+	cutVertices = d->GetShortestPath(mesh, poles[0], poles[1]);
 }
 
 // Given two triangles find the common edge vertices.
@@ -98,10 +97,10 @@ int SphereGen::GetIndex(const vector<int> cutVertices, int v)
 	return -1;
 }
 
-pair<vector<pair<int, int>>, set<int>> SphereGen::CreateCut(Mesh *mesh)
+pair<vector<pair<int, int>>, set<int>> SphereGen::CreateCut(Mesh *mesh, vector<int> &cutVertices)
 {
 	// Store global Ids for cut vertices and triangles.
-	vector<int> cutVertices = FindCutVertices(mesh);
+	FindCutVertices(mesh, cutVertices);
 	vector<int> cutVertsWithoutStartEnd = cutVertices;
 	cutVertsWithoutStartEnd.erase(cutVertsWithoutStartEnd.begin());
 	cutVertsWithoutStartEnd.erase(cutVertsWithoutStartEnd.begin() + cutVertsWithoutStartEnd.size() - 1);
@@ -314,7 +313,10 @@ pair<vector<pair<int, int>>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 	//			mesh->verts[duplicateVertices[idx]]->triList.push_back(triId);
 	//		}
 	//	}
-	//}	
+	//}
+	
+	// Add duplicateVertices to cutVertices to find the whole closed boundary.
+	// cutVertices.insert(cutVertices.end(), duplicateVertices.begin(), duplicateVertices.end());
 
 	return make_pair(triLabels, cutTris);
 }
