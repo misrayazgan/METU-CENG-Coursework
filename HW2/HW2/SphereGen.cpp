@@ -378,18 +378,42 @@ void SphereGen::DivideTriangles(Mesh *mesh, int v1, int v2, int v3, int level)
 	{
 		// Find coordinates for middle of 1 and 2
 		float *mid12 = GetMiddlePoint(mesh->verts[v1]->coords, mesh->verts[v2]->coords);
-		mesh->addVertex(mid12[0], mid12[1], mid12[2]);
-		int id12 = mesh->verts.size() - 1;
+		int id12 = mesh->FindVertexByCoord(mid12);
+		if(id12 > -1)	// vertex is already added to mesh
+		{
+			// Continue with id12
+		}
+		else		// vertex is not added to mesh previously
+		{
+			mesh->addVertex(mid12[0], mid12[1], mid12[2]);
+			id12 = mesh->verts.size() - 1;
+		}
 
 		// Find coordinates for middle of 2 and 3
 		float *mid23 = GetMiddlePoint(mesh->verts[v2]->coords, mesh->verts[v3]->coords);
-		mesh->addVertex(mid23[0], mid23[1], mid23[2]);
-		int id23 = mesh->verts.size() - 1;
+		int id23 = mesh->FindVertexByCoord(mid23);
+		if(id23 > -1)	// vertex is already added to mesh
+		{
+			// Continue with id23
+		}
+		else		// vertex is not added to mesh previously
+		{
+			mesh->addVertex(mid23[0], mid23[1], mid23[2]);
+			int id23 = mesh->verts.size() - 1;
+		}
 
 		// Find coordinates for middle of 1 and 3
 		float *mid13 = GetMiddlePoint(mesh->verts[v1]->coords, mesh->verts[v3]->coords);
-		mesh->addVertex(mid13[0], mid13[1], mid13[2]);
-		int id13 = mesh->verts.size() - 1;
+		int id13 = mesh->FindVertexByCoord(mid13);
+		if(id13 > -1)	// vertex is already added to mesh
+		{
+			// Continue with id13
+		}
+		else		// vertex is not added to mesh previously
+		{
+			mesh->addVertex(mid13[0], mid13[1], mid13[2]);
+			int id13 = mesh->verts.size() - 1;
+		}
 
 		DivideTriangles(mesh, v1, id12, id13, level);
 		DivideTriangles(mesh, id12, v2, id23, level);
