@@ -19,7 +19,7 @@ class Painter
 public:
 	SoSeparator* getShapeSep(Mesh* mesh);
 	SoSeparator* drawEdge(Mesh* mesh,  float *v1coords, float *v2coords, float *color, bool isThickEdge);
-	SoSeparator* getSphereSep(Mesh* mesh, int v, int i);
+	SoSeparator* getSphereSep(Mesh* mesh, int v, int i, float radius);
 	SoSeparator* getSphereSepByCoord(Mesh* mesh, float *coords, float radius);
 	SoSeparator* getSpheresSep(Mesh* mesh, vector<int> samples);
 	SoSeparator* getPointSep(Mesh* mesh, float *v1coords);
