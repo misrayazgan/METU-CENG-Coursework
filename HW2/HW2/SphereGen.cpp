@@ -225,72 +225,94 @@ pair<vector<pair<int, int>>, set<int>> SphereGen::CreateCut(Mesh *mesh)
 	//	int v3 = mesh->tris[labeled0[i]]->v3i;
 	//	
 	//	// Store cut and non-cut vertices.
-	//	vector<int> cuts;
+	//	vector<int> cuts;	// without start and end
 	//	vector<int> noncuts;
 	//	FillCutsNonCuts(cuts, noncuts, cutVertices, triId);
 	//	
+	// 	// duplicateVertices and cutVertsWithoutStartEnd have the same indexing.
 	//	// Find index of v1
 	//	int idx = GetIndex(cutVertsWithoutStartEnd, v1);
 	//	if(idx > -1)
 	//	{
-	//		// duplicateVertices and cutVertsWithoutStartEnd have the same indexing.
-	//		// Update vertices of triangle.
-	//		mesh->tris[triId]->v1i = idx;
+	//		// Update cut vertex of 0-triangle.
+	//		mesh->tris[triId]->v1i = duplicateVertices[idx];
 	//		
 	//		for(int j = 0; j < noncuts.size(); j++)
 	//		{
-	//			// Update neighboring noncut vertices of cut vertices.
-	//			mesh->verts[duplicateVertices[idx]]->vertList.push_back(noncuts[j]);
-	//			// Update neighboring vertices of non-cut vertices.
-	//			mesh->verts[noncuts[j]]->vertList.erase(v1);
+	//			// Update neighboring noncut vertices of cut vertex.
+	//			mesh->verts[duplicateVertices[idx]]->vertList.push_back(noncuts[j]); //Might contain duplicates in vertList
+	//			// Update neighboring cut vertex of non-cut vertices.
+	//			int v1Idx = GetIndex(mesh->verts[noncuts[j]]->vertList, v1);
+	//			if(v1Idx > -1)
+	//			{
+	//				mesh->verts[noncuts[j]]->vertList.erase(mesh->verts[noncuts[j]]->vertList.begin() + v1Idx);
+	//				mesh->verts[noncuts[j]]->vertList.push_back(duplicateVertices[idx]);
+	//			}
 	//		}
 	//		
-	//		// Update neighboring triangles of cut vertices.
-	//		// erase element ??????????????????????
-	//		mesh->verts[v1]->triList.erase(i);			
-	//		mesh->verts[duplicateVertices[idx]]->triList.push_back(i);			
+	//		// Update neighboring triangles of cut vertices if not updated before.
+	//		int triIdx = GetIndex(mesh->verts[v1]->triList, triId);
+	//		if(triIdx > -1)
+	//		{
+	//			mesh->verts[v1]->triList.erase(mesh->verts[v1]->triList.begin() + triIdx);
+	//			mesh->verts[duplicateVertices[idx]]->triList.push_back(triId);
+	//		}
 	//	}
 	//	// Find index of v2
 	//	int idx = GetIndex(cutVertsWithoutStartEnd, v2);
 	//	if(idx > -1)
 	//	{
-	//		// duplicateVertices and cutVertsWithoutStartEnd have the same indexing.
-	//		// Update vertices of triangle.
-	//		mesh->tris[triId]->v2i = idx;
+	//		// Update cut vertex of 0-triangle.
+	//		mesh->tris[triId]->v2i = duplicateVertices[idx];
 	//		
 	//		for(int j = 0; j < noncuts.size(); j++)
 	//		{
-	//			// Update neighboring noncut vertices of cut vertices.
-	//			mesh->verts[duplicateVertices[idx]]->vertList.push_back(noncuts[j]);
-	//			// Update neighboring vertices of non-cut vertices.
-	//			mesh->verts[noncuts[j]]->vertList.erase(v2);
+	//			// Update neighboring noncut vertices of cut vertex.
+	//			mesh->verts[duplicateVertices[idx]]->vertList.push_back(noncuts[j]); //Might contain duplicates in vertList
+	//			// Update neighboring cut vertex of non-cut vertices.
+	//			int v2Idx = GetIndex(mesh->verts[noncuts[j]]->vertList, v2);
+	//			if(v2Idx > -1)
+	//			{
+	//				mesh->verts[noncuts[j]]->vertList.erase(mesh->verts[noncuts[j]]->vertList.begin() + v2Idx);
+	//				mesh->verts[noncuts[j]]->vertList.push_back(duplicateVertices[idx]);
+	//			}
 	//		}
 	//		
-	//		// Update neighboring triangles of cut vertices.
-	//		// erase element ??????????????????????
-	//		mesh->verts[v2]->triList.erase(i);			
-	//		mesh->verts[duplicateVertices[idx]]->triList.push_back(i);			
+	//		// Update neighboring triangles of cut vertices if not updated before.
+	//		int triIdx = GetIndex(mesh->verts[v2]->triList, triId);
+	//		if(triIdx > -1)
+	//		{
+	//			mesh->verts[v2]->triList.erase(mesh->verts[v2]->triList.begin() + triIdx);
+	//			mesh->verts[duplicateVertices[idx]]->triList.push_back(triId);
+	//		}
 	//	}
 	//	// Find index of v3
 	//	int idx = GetIndex(cutVertsWithoutStartEnd, v3);
 	//	if(idx > -1)
 	//	{
-	//		// duplicateVertices and cutVertsWithoutStartEnd have the same indexing.
-	//		// Update vertices of triangle.
-	//		mesh->tris[triId]->v3i = idx;
+	//		// Update cut vertex of 0-triangle.
+	//		mesh->tris[triId]->v3i = duplicateVertices[idx];
 	//		
 	//		for(int j = 0; j < noncuts.size(); j++)
 	//		{
-	//			// Update neighboring noncut vertices of cut vertices.
-	//			mesh->verts[duplicateVertices[idx]]->vertList.push_back(noncuts[j]);
-	//			// Update neighboring vertices of non-cut vertices.
-	//			mesh->verts[noncuts[j]]->vertList.erase(v3);
+	//			// Update neighboring noncut vertices of cut vertex.
+	//			mesh->verts[duplicateVertices[idx]]->vertList.push_back(noncuts[j]); //Might contain duplicates in vertList
+	//			// Update neighboring cut vertex of non-cut vertices.
+	//			int v3Idx = GetIndex(mesh->verts[noncuts[j]]->vertList, v3);
+	//			if(v3Idx > -1)
+	//			{
+	//				mesh->verts[noncuts[j]]->vertList.erase(mesh->verts[noncuts[j]]->vertList.begin() + v3Idx);
+	//				mesh->verts[noncuts[j]]->vertList.push_back(duplicateVertices[idx]);
+	//			}
 	//		}
 	//		
-	//		// Update neighboring triangles of cut vertices.
-	//		// erase element ??????????????????????
-	//		mesh->verts[v3]->triList.erase(i);			
-	//		mesh->verts[duplicateVertices[idx]]->triList.push_back(i);			
+	//		// Update neighboring triangles of cut vertices if not updated before.
+	//		int triIdx = GetIndex(mesh->verts[v3]->triList, triId);
+	//		if(triIdx > -1)
+	//		{
+	//			mesh->verts[v3]->triList.erase(mesh->verts[v3]->triList.begin() + triIdx);
+	//			mesh->verts[duplicateVertices[idx]]->triList.push_back(triId);
+	//		}
 	//	}
 	//}	
 
@@ -357,12 +379,12 @@ void SphereGen::DivideTriangles(Mesh *mesh, int v1, int v2, int v3, int level)
 		mesh->addVertex(mid12[0], mid12[1], mid12[2]);
 		int id12 = mesh->verts.size() - 1;
 
-		// Find coordinates for middle of 1 and 2
+		// Find coordinates for middle of 2 and 3
 		float *mid23 = GetMiddlePoint(mesh->verts[v2]->coords, mesh->verts[v3]->coords);
 		mesh->addVertex(mid23[0], mid23[1], mid23[2]);
 		int id23 = mesh->verts.size() - 1;
 
-		// Find coordinates for middle of 1 and 2
+		// Find coordinates for middle of 1 and 3
 		float *mid13 = GetMiddlePoint(mesh->verts[v1]->coords, mesh->verts[v3]->coords);
 		mesh->addVertex(mid13[0], mid13[1], mid13[2]);
 		int id13 = mesh->verts.size() - 1;
@@ -402,6 +424,12 @@ Mesh * SphereGen::CreateTetrahedron()
 	mesh->addVertex(coords1[0], coords1[1], coords1[2]);
 	mesh->addVertex(coords2[0], coords2[1], coords2[2]);
 	mesh->addVertex(coords3[0], coords3[1], coords3[2]);
+	
+	// Try this
+	mesh->addTriangle(1, 2, 3);
+	mesh->addTriangle(1, 0, 2);
+	mesh->addTriangle(0, 1, 3);
+	mesh->addTriangle(3, 2, 0);
 
 	return mesh;
 }
@@ -440,10 +468,10 @@ Mesh * SphereGen::GenerateSphere()
 	Mesh *mesh = CreateTetrahedron();
 	// Split each face to 4 triangles recursively.
 	int level = 5;
-	SplitTetrahedron(mesh, level);
+	//SplitTetrahedron(mesh, level);
 	// Find the center point of the tetrahedron.
-	centroid = FindCentroid(mesh);
+	//centroid = FindCentroid(mesh);
 
-	GetSphereVertices(mesh);
+	//GetSphereVertices(mesh);
 	return mesh;
 }
