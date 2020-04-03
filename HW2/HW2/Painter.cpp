@@ -99,11 +99,9 @@ SoSeparator* Painter::drawEdge(Mesh* mesh, float *v1coords, float *v2coords, flo
 	return thickEdgeSep;
 }
 
-SoSeparator* Painter::getSphereSep(Mesh* mesh, int v, int i)
+SoSeparator* Painter::getSphereSep(Mesh* mesh, int v, int i, float radius)
 {
 	SoSeparator* sphereSep = new SoSeparator();
-	float radius = 0.01f;
-
 	SoTransform* tra = new SoTransform();
 	tra->translation.setValue(mesh->verts[v]->coords[0], mesh->verts[v]->coords[1], mesh->verts[v]->coords[2]);
 	sphereSep->addChild(tra);
