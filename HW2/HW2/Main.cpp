@@ -48,7 +48,7 @@ int main(int, char ** argv)
 	//root->addChild(painter->getShapeSep(mesh));
 	/*for(int i = 0; i < mesh->verts.size(); i++)
 	{
-		root->addChild(painter->getSphereSep(mesh, i, 2));
+		root->addChild(painter->getSphereSep(mesh, i, 2, 0.01f));
 	}*/
 
 	float * color = new float[3];
@@ -139,14 +139,14 @@ int main(int, char ** argv)
 		cout << "6: Sphere Generation" << endl;
 		
 		SphereGen *sphere = new SphereGen();
-		Mesh *tetrahedronSphere = sphere->GenerateSphere();
+		mesh = sphere->GenerateSphere();
 
-		for(int i = 0; i < tetrahedronSphere->edges.size(); i++)
+		for(int i = 0; i < mesh->edges.size(); i++)
 		{
-			Edge *edge = tetrahedronSphere->edges[i];
-			float *v1coords = tetrahedronSphere->verts[edge->v1i]->coords;
-			float *v2coords = tetrahedronSphere->verts[edge->v2i]->coords;
-			root->addChild(painter->drawEdge(tetrahedronSphere, v1coords, v2coords, color, false));
+			Edge *edge = mesh->edges[i];
+			float *v1coords = mesh->verts[edge->v1i]->coords;
+			float *v2coords = mesh->verts[edge->v2i]->coords;
+			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
 		}
 	}
 	else if(taskId == 7)
@@ -186,18 +186,18 @@ int main(int, char ** argv)
 		for(int i = 0; i < cutVertices.size(); i++)
 		{
 			int v = cutVertices[i];
-			root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.02f));
-			/*vector<int> triList = mesh->verts[v]->triList;
+			//root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.02f));
+			vector<int> triList = mesh->verts[v]->triList;
 			for(int j  = 0; j < mesh->verts[v]->triList.size(); j++)
 			{
 				int tri = mesh->verts[v]->triList[j];
 				int v1 = mesh->tris[tri]->v1i;
 				int v2 = mesh->tris[tri]->v2i;
 				int v3 = mesh->tris[tri]->v3i;
-				root->addChild(painter->getSphereSep(mesh, v1, 0));
-				root->addChild(painter->getSphereSep(mesh, v2, 1));
-				root->addChild(painter->getSphereSep(mesh, v3, 2));
-			}*/
+				root->addChild(painter->getSphereSep(mesh, v1, 1, 0.01f));
+				root->addChild(painter->getSphereSep(mesh, v2, 1, 0.01f));
+				root->addChild(painter->getSphereSep(mesh, v3, 1, 0.01f));
+			}
 		}
 
 		//pair<vector<pair<int, int>>, set<int>> cutResult = sphere->CreateCut(mesh, cutVertices);
@@ -211,9 +211,9 @@ int main(int, char ** argv)
 		//{
 		//	int cutTriId = *next(cutTriIds.begin(), i);
 		//	Triangle *tri = mesh->tris[cutTriId];
-		//	root->addChild(painter->getSphereSep(mesh, tri->v1i, 1)); //triLabels[i].second));
-		//	root->addChild(painter->getSphereSep(mesh, tri->v2i, 1)); //triLabels[i].second));
-		//	root->addChild(painter->getSphereSep(mesh, tri->v3i, 1)); //triLabels[i].second));
+		//	root->addChild(painter->getSphereSep(mesh, tri->v1i, 1, 0.01f)); //triLabels[i].second));
+		//	root->addChild(painter->getSphereSep(mesh, tri->v2i, 1, 0.01f)); //triLabels[i].second));
+		//	root->addChild(painter->getSphereSep(mesh, tri->v3i, 1, 0.01f)); //triLabels[i].second));
 		//}
 		
 		// If cut is created successfully
