@@ -205,7 +205,7 @@ void Mesh::computeNormals()
 	}
 }
 
-int Mesh::FindVertexByCoord(float *coords)
+int Mesh::findVertexByCoord(float *coords)
 {
 	for(int i = 0; i < mesh->verts.size(); i++)
 	{
