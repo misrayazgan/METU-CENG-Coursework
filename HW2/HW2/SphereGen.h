@@ -8,8 +8,8 @@ public:
 	SphereGen() {};
 	Mesh * GenerateSphere();
 	vector<int> FindPoleVertices(Mesh *mesh);
-	vector<int> FindCutVertices(Mesh *mesh);
-	pair<vector<pair<int, int>>, set<int>> CreateCut(Mesh *mesh);
+	void FindCutVertices(Mesh *mesh, vector<int> &cutVertices);
+	pair<vector<pair<int, int>>, set<int>> CreateCut(Mesh *mesh, vector<int> &cutVertices);
 private:
 	FreeVertex *centroid;
 	FreeVertex* FindCentroid(Mesh *mesh);
