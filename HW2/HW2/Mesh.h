@@ -58,6 +58,7 @@ public:
 	float computeEdgeLength(int v1i, int v2i);
 	bool isNeighbor(int v1i, int v2i);
 	void computeNormals();
+	int findVertexByCoord(float *coords);
 };
 
 // Vertex without an idx, independent from mesh
