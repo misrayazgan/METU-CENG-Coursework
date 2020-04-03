@@ -579,11 +579,24 @@ vector<FreeVertex *> Parameterization::DiskParameterization(Mesh *mesh)
 	return resultVertices;
 }
 
-//vector<FreeVertex *> Parameterization::ClosedMeshParam(Mesh *mesh)
-//{
-//}
-//
-//vector<FreeVertex *> Parameterization::SphereParam(Mesh *mesh, vector<int> boundaryVertices)
-//{
-//
-//}
+vector<FreeVertex *> Parameterization::ParamClosedMesh(Mesh *mesh, set<int> boundaryVertices)
+{
+	// Map boundary vertices to disk
+	vector<FreeVertex *> circleVertices = GetCircleVertices(boundaryVertices.size());
+
+	// Map non-boundary vertices
+	if(weight == UNIFORM)
+	{
+		resultVertices = ParamUniform(mesh, circleVertices);
+	}
+	else if(weight == HARMONIC)
+	{
+		resultVertices = ParamHarmonic(mesh, circleVertices);
+	}
+	else if(weight == MEAN_VALUE)
+	{
+		resultVertices = ParamMeanValue(mesh, circleVertices);
+	}
+
+	return resultVertices;
+}
