@@ -204,3 +204,16 @@ void Mesh::computeNormals()
 		tris[i]->normal = normal;
 	}
 }
+
+int Mesh::FindVertexByCoord(float *coords)
+{
+	for(int i = 0; i < mesh->verts.size(); i++)
+	{
+		float *vCoords = mesh->verts[i]->coords;
+		if(coords[0] == vCoords[0] && coords[1] == vCoords[1] && coords[2] == vCoords[2])
+		{
+			return i;
+		}
+	}
+	return -1;
+}
