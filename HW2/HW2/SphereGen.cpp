@@ -177,6 +177,7 @@ pair<vector<pair<int, int>>, set<int>> SphereGen::CreateCut(Mesh *mesh, vector<i
 	}
 	
 	cout << "number of cut triangles: " << cutTris.size() << endl;
+	cout << "number of labeled cut triangles: " << triLabels.size() << endl;
 	//cout << "number of not labeled cut triangles: " << notLabeled.size() << endl;
 	/***************to be deleted**************/
 	
