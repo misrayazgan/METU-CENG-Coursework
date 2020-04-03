@@ -174,7 +174,8 @@ int main(int, char ** argv)
 		// }
 
 		// Draw edges between the cut vertices.
-		vector<int> cutVertices = sphere->FindCutVertices(mesh);
+		vector<int> cutVertices;
+		sphere->FindCutVertices(mesh, cutVertices);
 		for(int i = 0; i < cutVertices.size() - 1; i++)
 		{
 			float *v1coords = mesh->verts[cutVertices[i]]->coords;
@@ -199,7 +200,7 @@ int main(int, char ** argv)
 			}*/
 		}
 
-		//pair<vector<pair<int, int>>, set<int>> cutResult = sphere->CreateCut(mesh);
+		//pair<vector<pair<int, int>>, set<int>> cutResult = sphere->CreateCut(mesh, cutVertices);
 		//vector<pair<int, int>> triLabels = cutResult.first;
 		//set<int> cutTriIds = cutResult.second;
 		//cout << cutTriIds.size() << endl;
@@ -214,6 +215,11 @@ int main(int, char ** argv)
 		//	root->addChild(painter->getSphereSep(mesh, tri->v2i, 1)); //triLabels[i].second));
 		//	root->addChild(painter->getSphereSep(mesh, tri->v3i, 1)); //triLabels[i].second));
 		//}
+		
+		// If cut is created successfully
+		// set<int> boundaryVertices(cutVertices.begin(), cutVertices.end());
+		// Parameterization *p = new Parameterization(UNIFORM);
+		// p->ParamClosedMesh(mesh, boundaryVertices);
 	}
 
 	// Stuff to be drawn must be added to the root.
