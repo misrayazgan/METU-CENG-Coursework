@@ -25,7 +25,7 @@ public:
 
 	vector<FreeVertex *> ParamClosedMesh(Mesh *mesh, vector<int> boundaryVertices);
 	vector<int> FindPoleVertices(Mesh *mesh);
-	void FindCutVertices(Mesh *mesh, vector<int> &cutVertices);
+	vector<int> FindCutVertices(Mesh *mesh);
 	int GetIndex(const vector<int> cutVertices, int v);
 	pair<map<int, int>, set<int>> CreateCut(Mesh *mesh, vector<int> &cutVertices);
 private:
