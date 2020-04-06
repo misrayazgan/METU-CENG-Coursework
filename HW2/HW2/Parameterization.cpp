@@ -493,25 +493,6 @@ vector<FreeVertex *> Parameterization::ParamMeanValue(Mesh *mesh, vector<FreeVer
 	return resultVertices;
 }
 
-void Parameterization::writeMatrix(Mesh *mesh, Eigen::MatrixXf W)
-{ 
-	FILE* file = fopen("miso_output.txt", "w");
-
-	if(file != NULL)
-	{
-		for(int i = 0; i < mesh->verts.size(); i++)
-		{
-			for(int j = 0; j < mesh->verts.size(); j++)
-			{
-				fprintf(file, "%.6g ", W(i, j));
-			}
-			fprintf(file, "\n");
-		}
-
-		fclose(file);
-	}
-} 
-
 vector<FreeVertex *> Parameterization::GetCircleVertices(int numberOfCircleV)
 {
 	vector<FreeVertex *> circleVertices;
