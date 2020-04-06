@@ -599,7 +599,7 @@ bool Parameterization::IsCutEdge(vector<int> cutVertices, vector<int> verts)
 	return false;
 }
 
-pair<map<int, int>, set<int>> Parameterization::CreateCut(Mesh *mesh, vector<int> &cutVertices, vector<int> &duplicateVertices)
+pair<map<int, int>, set<int>> Parameterization::CreateCut(Mesh *mesh, vector<int> &cutVertices)
 {
 	// Store global Ids for cut vertices and triangles.
 	FindCutVertices(mesh, cutVertices);
@@ -632,9 +632,8 @@ pair<map<int, int>, set<int>> Parameterization::CreateCut(Mesh *mesh, vector<int
 
 	// Consider all triangles around the cut.
 	while(triLabels.size() != cutTris.size())
-	//for(int i = 1; i < cutTris.size(); i++)
 	{
-		int cutTri = notConsideredTris[0];//*next(cutTris.begin(), i);
+		int cutTri = notConsideredTris[0];
 		int triLabel;
 		bool labelFound = false;
 
@@ -678,8 +677,8 @@ pair<map<int, int>, set<int>> Parameterization::CreateCut(Mesh *mesh, vector<int
 	vector<int> labeled1;	
 	FillLabels(triLabels, labeled0, labeled1);
 	
-	// Add duplicate cut vertices.
-	//vector<int> duplicateVertices;
+	// Add duplicate cut vertices to mesh.
+	vector<int> duplicateVertices;
 	for(int i = 0; i < cutVertsWithoutStartEnd.size(); i++)
 	{
 		float *coords = mesh->verts[cutVertsWithoutStartEnd[i]]->coords;
