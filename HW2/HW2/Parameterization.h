@@ -27,7 +27,7 @@ public:
 	vector<int> FindPoleVertices(Mesh *mesh);
 	void FindCutVertices(Mesh *mesh, vector<int> &cutVertices);
 	int GetIndex(const vector<int> cutVertices, int v);
-	pair<map<int, int>, set<int>> CreateCut(Mesh *mesh, vector<int> &cutVertices, vector<int> &duplicateVertices);
+	pair<map<int, int>, set<int>> CreateCut(Mesh *mesh, vector<int> &cutVertices);
 private:
 	WeightEnum weight;
 	bool isClosed;
