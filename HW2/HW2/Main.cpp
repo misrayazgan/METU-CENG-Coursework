@@ -38,7 +38,11 @@ int main(int, char ** argv)
 		mesh->loadOff(filename);
 	}
 
-	
+	bool isClosed = true;
+	if(filename[0] == 'f')	// face etc.
+	{
+		isClosed = false;
+	}
 
 	cout << "Number of Vertices: " << mesh->verts.size() << endl;
 	cout << "Number of Edges: " << mesh->edges.size() << endl;
@@ -61,6 +65,11 @@ int main(int, char ** argv)
 	blue[1] = 0.0f;
 	blue[2] = 1.0f;
 
+	float * red = new float[3];
+	red[0] = 1.0f;
+	red[1] = 0.0f;
+	red[2] = 0.0f;
+
 	if(taskId == 1 || taskId == 2 || taskId == 3)
 	{
 		/*****************Disk Parameterization******************/
@@ -81,7 +90,7 @@ int main(int, char ** argv)
 			paramType = MEAN_VALUE;
 		}
 		
-		Parameterization *param = new Parameterization(paramType);
+		Parameterization *param = new Parameterization(paramType, isClosed);
 		set<int> boundaryVertices = param->FindBoundaryVertices(mesh);
 
 		vector<FreeVertex *> circleVertices = param->GetCircleVertices(boundaryVertices.size());
@@ -130,8 +139,90 @@ int main(int, char ** argv)
 	}
 	else if(taskId == 5)
 	{
+		/*****************Disk Parameterization for Closed Meshes******************/
 		cout << "5: Disk Parameterization of Closed Mesh" << endl;
-		cout << "Not implemented :(" << endl;
+		//root->addChild(painter->getShapeSep(mesh));
+
+		Parameterization *param = new Parameterization(UNIFORM, isClosed);
+
+		// Find cut vertices.
+		vector<int> cutVertices;
+		param->FindCutVertices(mesh, cutVertices);
+		vector<int> beforeDup = cutVertices;
+		vector<Vertex *> beforeMesh = mesh->verts;
+
+		// Draw blue edges between cut vertices.
+		/*for(int i = 0; i < cutVertices.size() - 1; i++)
+		{
+			float *v1coords = mesh->verts[cutVertices[i]]->coords;
+			float *v2coords = mesh->verts[cutVertices[i + 1]]->coords;
+			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, blue, true));
+		}*/
+
+		vector<int> duplicateVertices;
+		pair<map<int, int>, set<int>> cutResult = param->CreateCut(mesh, cutVertices, duplicateVertices);
+		map<int, int> triLabels = cutResult.first;
+		set<int> cutTriIds = cutResult.second;
+		cout << cutTriIds.size() << endl;
+		cout << triLabels.size() << endl;
+		cout << cutVertices.size() << endl;
+
+		/*for(int i = 0; i < cutTriIds.size(); i++)
+		{
+			int cutTriId = *next(cutTriIds.begin(), i);
+			Triangle *tri = mesh->tris[cutTriId];
+			int v1Idx = param->GetIndex(cutVertices, tri->v1i);
+			if(!(v1Idx > -1))
+				root->addChild(painter->getSphereSep(mesh, tri->v1i, triLabels[cutTriId], 2.0f));
+			int v2Idx = param->GetIndex(cutVertices, tri->v2i);
+			if(!(v2Idx > -1))
+				root->addChild(painter->getSphereSep(mesh, tri->v2i, triLabels[cutTriId], 2.0f));
+			int v3Idx = param->GetIndex(cutVertices, tri->v3i);
+			if(!(v3Idx > -1))
+				root->addChild(painter->getSphereSep(mesh, tri->v3i, triLabels[cutTriId], 2.0f));
+		}*/
+
+		// Draw spheres to all cut vertices including duplicates.
+		/*for(int i = 0; i < cutVertices.size(); i++)
+		{
+			root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.01f));
+		}*/
+
+		// Draw red and blue edges to both sides.
+		/*for(int i = 0; i < cutVertices.size(); i++)
+		{
+			vector<int> neighborVerts = mesh->verts[cutVertices[i]]->vertList;
+			for(int j = 0; j < neighborVerts.size(); j++)
+			{
+				float *v1Coords = mesh->verts[cutVertices[i]]->coords;
+				float *v2Coords = mesh->verts[neighborVerts[j]]->coords;
+				if(i < beforeDup.size())
+					root->addChild(painter->drawEdge(mesh, v1Coords, v2Coords, blue, true));
+				else
+					root->addChild(painter->drawEdge(mesh, v1Coords, v2Coords, red, true));
+			}
+		}*/
+
+		// Draw spheres on circle vertices.
+		vector<FreeVertex *> circleVertices = param->GetCircleVertices(cutVertices.size());
+		for(int i = 0; i < circleVertices.size() - 1; i++)
+		{
+			root->addChild(painter->getSphereSepByCoord(mesh, circleVertices[i]->coords, 0.2f));
+		}
+		root->addChild(painter->getSphereSepByCoord(mesh, circleVertices[circleVertices.size() - 1]->coords, 0.2f));
+		
+		vector<FreeVertex *> resultVertices = param->ParamClosedMesh(mesh, cutVertices);
+		for(int i = 0; i < mesh->verts.size(); i++)
+		{
+			vector<int> neighborVerts = mesh->verts[i]->vertList;
+			for(int j = 0; j < neighborVerts.size(); j++)
+			{
+				float *v1coords = resultVertices[i]->coords;
+				float *v2coords = resultVertices[neighborVerts[j]]->coords;
+				root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
+			}
+		}
+
 	}
 	else if(taskId == 6)
 	{
@@ -151,20 +242,26 @@ int main(int, char ** argv)
 	}
 	else if(taskId == 7)
 	{
+		/*****************Disk Parameterization for Generated Sphere******************/
 		cout << "7: Disk Parameterization of Generated Sphere" << endl;
 
 		SphereGen *sphere = new SphereGen();
 		mesh = sphere->GenerateSphere();
 		//mesh->loadOff("sphere.off");
+		isClosed = true;
+
+		cout << "Number of Vertices: " << mesh->verts.size() << endl;
+		cout << "Number of Edges: " << mesh->edges.size() << endl;
+		cout << "Number of Triangles: " << mesh->tris.size() << endl;
 
 		// Draw the sphere generated from tetrahedron.
-		for(int i = 0; i < mesh->edges.size(); i++)
+		/*for(int i = 0; i < mesh->edges.size(); i++)
 		{
 			Edge *edge = mesh->edges[i];
 			float *v1coords = mesh->verts[edge->v1i]->coords;
 			float *v2coords = mesh->verts[edge->v2i]->coords;
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
-		}
+		}*/
 
 		// Draw the pole vertices(cut start and end).
 		// vector<int> poleVertices = sphere->FindPoleVertices(mesh);
@@ -173,20 +270,22 @@ int main(int, char ** argv)
 		// 	root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[poleVertices[i]]->coords, 0.01f));
 		// }
 
-		// Draw edges between the cut vertices.
+		// Draw blue edges between the cut vertices.
 		vector<int> cutVertices;
 		sphere->FindCutVertices(mesh, cutVertices);
-		for(int i = 0; i < cutVertices.size() - 1; i++)
+		vector<int> beforeDup = cutVertices;
+		vector<Vertex *> beforeMesh = mesh->verts;
+		/*for(int i = 0; i < cutVertices.size() - 1; i++)
 		{
 			float *v1coords = mesh->verts[cutVertices[i]]->coords;
 			float *v2coords = mesh->verts[cutVertices[i + 1]]->coords;
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, blue, true));
-		}
+		}*/
 		// Draw spheres to cut vertices.
-		for(int i = 0; i < cutVertices.size(); i++)
+		/*for(int i = 0; i < cutVertices.size(); i++)
 		{
 			int v = cutVertices[i];
-			//root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.02f));
+			root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.02f));
 			vector<int> triList = mesh->verts[v]->triList;
 			for(int j  = 0; j < mesh->verts[v]->triList.size(); j++)
 			{
@@ -198,28 +297,86 @@ int main(int, char ** argv)
 				root->addChild(painter->getSphereSep(mesh, v2, 1, 0.01f));
 				root->addChild(painter->getSphereSep(mesh, v3, 1, 0.01f));
 			}
-		}
+		}*/
 
-		//pair<vector<pair<int, int>>, set<int>> cutResult = sphere->CreateCut(mesh, cutVertices);
-		//vector<pair<int, int>> triLabels = cutResult.first;
-		//set<int> cutTriIds = cutResult.second;
-		//cout << cutTriIds.size() << endl;
-		//cout << triLabels.size() << endl;
-		//cout << cutVertices.size() << endl;
+		// Draw labeled0 and labeled1 vertices.
+		vector<int> duplicateVertices;
+		pair<map<int, int>, set<int>> cutResult = sphere->CreateCut(mesh, cutVertices, duplicateVertices);
+		map<int, int> triLabels = cutResult.first;
+		set<int> cutTriIds = cutResult.second;
+		cout << cutTriIds.size() << endl;
+		cout << triLabels.size() << endl;
+		cout << cutVertices.size() << endl;
 
-		//for(int i = 0; i < cutTriIds.size(); i++)
-		//{
-		//	int cutTriId = *next(cutTriIds.begin(), i);
-		//	Triangle *tri = mesh->tris[cutTriId];
-		//	root->addChild(painter->getSphereSep(mesh, tri->v1i, 1, 0.01f)); //triLabels[i].second));
-		//	root->addChild(painter->getSphereSep(mesh, tri->v2i, 1, 0.01f)); //triLabels[i].second));
-		//	root->addChild(painter->getSphereSep(mesh, tri->v3i, 1, 0.01f)); //triLabels[i].second));
-		//}
+		/*for(int i = 0; i < cutTriIds.size(); i++)
+		{
+			int cutTriId = *next(cutTriIds.begin(), i);
+			Triangle *tri = mesh->tris[cutTriId];
+			int v1Idx = sphere->GetIndex(cutVertices, tri->v1i);
+			if(!(v1Idx > -1))
+				root->addChild(painter->getSphereSep(mesh, tri->v1i, triLabels[cutTriId], 0.01f));
+			int v2Idx = sphere->GetIndex(cutVertices, tri->v2i);
+			if(!(v2Idx > -1))
+				root->addChild(painter->getSphereSep(mesh, tri->v2i, triLabels[cutTriId], 0.01f));
+			int v3Idx = sphere->GetIndex(cutVertices, tri->v3i);
+			if(!(v3Idx > -1))
+				root->addChild(painter->getSphereSep(mesh, tri->v3i, triLabels[cutTriId], 0.01f));
+		}*/
+
+		// Draw spheres to all cut vertices including duplicates.
+		/*for(int i = 0; i < cutVertices.size(); i++)
+		{
+			root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.01f));
+		}*/
+
+		// Draw red and blue edges to both sides.
+		/*for(int i = 0; i < cutVertices.size(); i++)
+		{
+			vector<int> neighborVerts = mesh->verts[cutVertices[i]]->vertList;
+			for(int j = 0; j < neighborVerts.size(); j++)
+			{
+				float *v1Coords = mesh->verts[cutVertices[i]]->coords;
+				float *v2Coords = mesh->verts[neighborVerts[j]]->coords;
+				if(i < beforeDup.size())
+					root->addChild(painter->drawEdge(mesh, v1Coords, v2Coords, blue, true));
+				else
+					root->addChild(painter->drawEdge(mesh, v1Coords, v2Coords, red, true));
+			}
+		}*/
 		
 		// If cut is created successfully
-		// set<int> boundaryVertices(cutVertices.begin(), cutVertices.end());
-		// Parameterization *p = new Parameterization(UNIFORM);
-		// p->ParamClosedMesh(mesh, boundaryVertices);
+		Parameterization *param = new Parameterization(UNIFORM, isClosed);
+
+		// Draw spheres on circle vertices.
+		vector<FreeVertex *> circleVertices = param->GetCircleVertices(cutVertices.size());
+		for(int i = 0; i < circleVertices.size() - 1; i++)
+		{
+			root->addChild(painter->getSphereSepByCoord(mesh, circleVertices[i]->coords, 0.2f));
+		}
+		root->addChild(painter->getSphereSepByCoord(mesh, circleVertices[circleVertices.size() - 1]->coords, 0.2f));
+
+		vector<FreeVertex *> resultVertices = param->ParamClosedMesh(mesh, cutVertices);
+		// Find the corresponding new vertices for the original vertices wrt their neighbors.
+		/*for(int i = 0; i < cutVertices.size(); i++)
+		{
+			vector<int> neighborVerts = mesh->verts[cutVertices[i]]->vertList;
+			float *v1coords = resultVertices[cutVertices[i]]->coords;
+			for(int j = 0; j < neighborVerts.size(); j++)
+			{
+				float *v2coords = resultVertices[neighborVerts[j]]->coords;
+				root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
+			}
+		}*/
+		for(int i = 0; i < mesh->verts.size(); i++)
+		{
+			vector<int> neighborVerts = mesh->verts[i]->vertList;
+			for(int j = 0; j < neighborVerts.size(); j++)
+			{
+				float *v1coords = resultVertices[i]->coords;
+				float *v2coords = resultVertices[neighborVerts[j]]->coords;
+				root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
+			}
+		}
 	}
 
 	// Stuff to be drawn must be added to the root.

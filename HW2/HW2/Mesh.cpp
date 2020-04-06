@@ -207,9 +207,9 @@ void Mesh::computeNormals()
 
 int Mesh::findVertexByCoord(float *coords)
 {
-	for(int i = 0; i < mesh->verts.size(); i++)
+	for(int i = 0; i < verts.size(); i++)
 	{
-		float *vCoords = mesh->verts[i]->coords;
+		float *vCoords = verts[i]->coords;
 		if(coords[0] == vCoords[0] && coords[1] == vCoords[1] && coords[2] == vCoords[2])
 		{
 			return i;

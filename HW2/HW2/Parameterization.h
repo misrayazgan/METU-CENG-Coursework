@@ -1,6 +1,9 @@
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include "Mesh.h"
+#include "Dijkstra.h"
 #include <set>
+#include <map>
 #include <numeric>
 
 #define PI 3.14159265
@@ -15,16 +18,22 @@ enum WeightEnum
 class Parameterization
 {
 public:
-	Parameterization(WeightEnum w);
+	Parameterization(WeightEnum w, bool closed);
 	void writeMatrix(Mesh *mesh, Eigen::MatrixXf W);
 	vector<FreeVertex *> DiskParameterization(Mesh *mesh);
 	set<int> FindBoundaryVertices(Mesh *mesh);
 	vector<FreeVertex *> GetCircleVertices(int numberOfVertices);
-	vector<FreeVertex *> ParamClosedMesh(Mesh *mesh, set<int> boundaryVertices);
+
+	vector<FreeVertex *> ParamClosedMesh(Mesh *mesh, vector<int> boundaryVertices);
+	vector<int> FindPoleVertices(Mesh *mesh);
+	void FindCutVertices(Mesh *mesh, vector<int> &cutVertices);
+	int GetIndex(const vector<int> cutVertices, int v);
+	pair<map<int, int>, set<int>> CreateCut(Mesh *mesh, vector<int> &cutVertices, vector<int> &duplicateVertices);
 private:
 	WeightEnum weight;
+	bool isClosed;
 	vector<bool> isBoundary;
-	vector<FreeVertex *> ParamUniform(Mesh *mesh, vector<FreeVertex *> circleVertices);
+	vector<FreeVertex *> ParamUniform(Mesh *mesh, vector<FreeVertex *> circleVertices, vector<int> boundaryVerts);
 	vector<FreeVertex *> ParamHarmonic(Mesh *mesh, vector<FreeVertex *> circleVertices);
 	vector<FreeVertex *> ParamMeanValue(Mesh *mesh, vector<FreeVertex *> circleVertices);
 	int FindClosestCircleVertex(float *srcCoords, vector<FreeVertex *> circleVertices);
@@ -34,4 +43,9 @@ private:
 	bool isMouthVertex(Mesh *mesh, int v);
 	int FindSuccessiveVertex(vector<FreeEdge *> edges, int prevV, int currentV);
 	void display(vector<vector<float>> W);
+	void SetBoundaryVertices(Mesh *mesh, set<int> boundaryVertices);
+	bool IsCutEdge(vector<int> cutVertices, vector<int> verts);
+	vector<int> FindCommonVertices(Mesh *mesh, int t1, int t2);
+	void FillCutsNonCuts(Mesh *mesh, vector<int> &cuts, vector<int> &noncuts, vector<int> cutVertices, int triId);
+	void FillLabels(map<int, int> triLabels, vector<int> &labeled0, vector<int> &labeled1);
 };
