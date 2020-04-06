@@ -142,10 +142,7 @@ int main(int, char ** argv)
 		Parameterization *param = new Parameterization(UNIFORM, isClosed);
 
 		// Find cut vertices.
-		vector<int> cutVertices;
-		param->FindCutVertices(mesh, cutVertices);
-		vector<int> beforeDup = cutVertices;
-		vector<Vertex *> beforeMesh = mesh->verts;
+		vector<int> cutVertices = param->FindCutVertices(mesh);
 
 		// Draw blue edges between cut vertices.
 		/*for(int i = 0; i < cutVertices.size() - 1; i++)
@@ -155,8 +152,7 @@ int main(int, char ** argv)
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, blue, true));
 		}*/
 
-		vector<int> duplicateVertices;
-		pair<map<int, int>, set<int>> cutResult = param->CreateCut(mesh, cutVertices, duplicateVertices);
+		pair<map<int, int>, set<int>> cutResult = param->CreateCut(mesh, cutVertices);
 		map<int, int> triLabels = cutResult.first;
 		set<int> cutTriIds = cutResult.second;
 		cout << cutTriIds.size() << endl;
@@ -243,11 +239,9 @@ int main(int, char ** argv)
 			root->addChild(painter->drawEdge(mesh, v1coords, v2coords, color, false));
 		}*/
 
+		Parameterization *param = new Parameterization(UNIFORM, isClosed);
 		// Draw blue edges between the cut vertices.
-		vector<int> cutVertices;
-		sphere->FindCutVertices(mesh, cutVertices);
-		vector<int> beforeDup = cutVertices;
-		vector<Vertex *> beforeMesh = mesh->verts;
+		vector<int> cutVertices = param->FindCutVertices(mesh);
 		/*for(int i = 0; i < cutVertices.size() - 1; i++)
 		{
 			float *v1coords = mesh->verts[cutVertices[i]]->coords;
@@ -260,8 +254,7 @@ int main(int, char ** argv)
 			root->addChild(painter->getSphereSepByCoord(mesh, mesh->verts[cutVertices[i]]->coords, 0.02f));
 		}*/
 
-		vector<int> duplicateVertices;
-		pair<map<int, int>, set<int>> cutResult = sphere->CreateCut(mesh, cutVertices, duplicateVertices);
+		pair<map<int, int>, set<int>> cutResult = param->CreateCut(mesh, cutVertices);
 		map<int, int> triLabels = cutResult.first;
 		set<int> cutTriIds = cutResult.second;
 		cout << cutTriIds.size() << endl;
@@ -288,9 +281,6 @@ int main(int, char ** argv)
 					root->addChild(painter->drawEdge(mesh, v1Coords, v2Coords, red, true));
 			}
 		}*/
-		
-		// If cut is created successfully
-		Parameterization *param = new Parameterization(UNIFORM, isClosed);
 
 		// Draw spheres on circle vertices.
 		vector<FreeVertex *> circleVertices = param->GetCircleVertices(cutVertices.size());
