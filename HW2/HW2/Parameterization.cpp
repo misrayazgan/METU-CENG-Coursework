@@ -551,12 +551,13 @@ vector<int> Parameterization::FindPoleVertices(Mesh *mesh)
 	return poles;
 }
 
-void Parameterization::FindCutVertices(Mesh *mesh, vector<int> &cutVertices)
+vector<int> Parameterization::FindCutVertices(Mesh *mesh)
 {
 	// Find start and end points of the cut.
 	vector<int> poles = FindPoleVertices(mesh);
 	Dijkstra *d = new Dijkstra();
-	cutVertices = d->GetShortestPath(mesh, poles[0], poles[1]);
+	vector<int> cutVertices = d->GetShortestPath(mesh, poles[0], poles[1]);
+	return cutVertices;
 }
 
 // Given two triangles find the common edge vertices.
