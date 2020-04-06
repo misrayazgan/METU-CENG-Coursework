@@ -19,7 +19,6 @@ class Parameterization
 {
 public:
 	Parameterization(WeightEnum w, bool closed);
-	void writeMatrix(Mesh *mesh, Eigen::MatrixXf W);
 	vector<FreeVertex *> DiskParameterization(Mesh *mesh);
 	set<int> FindBoundaryVertices(Mesh *mesh);
 	vector<FreeVertex *> GetCircleVertices(int numberOfVertices);
@@ -40,7 +39,6 @@ private:
 	float FindDistance(float* coords1, float* coords2);
 	float FindAngle(float *v1coords, float *v2coords);
 	float* GetVector(float* p1, float* p2);
-	bool isMouthVertex(Mesh *mesh, int v);
 	int FindSuccessiveVertex(vector<FreeEdge *> edges, int prevV, int currentV);
 	void display(vector<vector<float>> W);
 	void SetBoundaryVertices(Mesh *mesh, set<int> boundaryVertices);
