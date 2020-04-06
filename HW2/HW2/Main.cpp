@@ -26,9 +26,10 @@ int main(int, char ** argv)
 	cout << "5: Disk Parameterization of Closed Mesh" << endl;
 	cout << "6: Sphere Generation" << endl;
 	cout << "7: Disk Parameterization of Generated Sphere" << endl;
-	cout << "Enter the id for the desired task:" << endl;
+	cout << "Enter the id for the desired task (from 1 to 7):" << endl;
 	cin >> taskId;
 
+	Painter *painter = new Painter();
 	Mesh *mesh = new Mesh();
 	char filename[20];
 	if(taskId != 6 && taskId != 7)
@@ -38,6 +39,7 @@ int main(int, char ** argv)
 		mesh->loadOff(filename);
 	}
 
+	// Identify closed and open meshes.
 	bool isClosed = true;
 	if(filename[0] == 'f')	// face etc.
 	{
@@ -47,13 +49,6 @@ int main(int, char ** argv)
 	cout << "Number of Vertices: " << mesh->verts.size() << endl;
 	cout << "Number of Edges: " << mesh->edges.size() << endl;
 	cout << "Number of Triangles: " << mesh->tris.size() << endl;
-
-	Painter *painter = new Painter();
-	//root->addChild(painter->getShapeSep(mesh));
-	/*for(int i = 0; i < mesh->verts.size(); i++)
-	{
-		root->addChild(painter->getSphereSep(mesh, i, 2, 0.01f));
-	}*/
 
 	float * color = new float[3];
 	color[0] = 0.7f;
