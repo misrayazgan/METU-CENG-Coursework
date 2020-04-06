@@ -182,34 +182,25 @@ vector<FreeVertex *> Parameterization::ParamUniform(Mesh *mesh, vector<FreeVerte
 	// Fill W.
 	for(int i = 0; i < numberOfVertices; i++)
 	{
-		for(int j = 0; j < numberOfVertices; j++)
+		// On the diagonal and boundary vertex
+		if(isBoundary[i] == true)
 		{
-			// On the diagonal and boundary vertex
-			if(i == j && isBoundary[i] == true)
-			{
-				W.insert(i, j) = 1;
-			}
-			else if(i != j && mesh->isNeighbor(i, j) && isBoundary[i] == false)
-			{
-				W.insert(i, j) = 1;
-			}
+			W.insert(i, i) = 1;
 		}
-	}
-
-	// On the diagonal and non-boundary vertex
-	for(int i = 0; i < numberOfVertices; i++)
-	{
-		if(isBoundary[i] == false)
+		else
 		{
+			// Not on the diagonal (i != j)
 			// Total value of the row
 			float sum = 0;
-			//W.insert(i, i) = -1 * W.rowwise().sum()(i);
-			for(int j = 0; j < numberOfVertices; j++)
+			vector<int> neighborVerts = mesh->verts[i]->vertList;
+			for(int j = 0; j < neighborVerts.size(); j++)
 			{
-				sum += W.coeffRef(i, j);
+				W.insert(i, neighborVerts[j]) = 1;
+				sum += 1;
 			}
-			W.coeffRef(i, i) = -1 * sum;
-		}
+			// On the diagonal and non-boundary vertex
+			W.insert(i, i) = -1 * sum;	// coeffref mi olacak ????
+		}		
 	}
 
 	// Fill bx and by.
@@ -254,7 +245,6 @@ vector<FreeVertex *> Parameterization::ParamUniform(Mesh *mesh, vector<FreeVerte
 	solver.factorize(W); 
 	Eigen::VectorXf xx = solver.solve(bx);
 	Eigen::VectorXf xy = solver.solve(by);
-
 
 	for(int i = 0; i < numberOfVertices; i++)
 	{
@@ -335,11 +325,7 @@ vector<FreeVertex *> Parameterization::ParamHarmonic(Mesh *mesh, vector<FreeVert
 		{
 			W(i, i) = 1;
 		}
-	}
-
-	for(int i = 0; i < numberOfVertices; i++)
-	{
-		if(isBoundary[i] == false)
+		else
 		{
 			// Total value of the row
 			W(i, i) = -1 * W.rowwise().sum()(i);
@@ -384,8 +370,6 @@ vector<FreeVertex *> Parameterization::ParamHarmonic(Mesh *mesh, vector<FreeVert
 		FreeVertex *v = new FreeVertex(coords);
 		resultVertices.push_back(v);
 	}
-
-	//writeMatrix(mesh, W);
 
 	return resultVertices;
 }
@@ -460,11 +444,7 @@ vector<FreeVertex *> Parameterization::ParamMeanValue(Mesh *mesh, vector<FreeVer
 		{
 			W(i, i) = 1;
 		}
-	}
-
-	for(int i = 0; i < numberOfVertices; i++)
-	{
-		if(isBoundary[i] == false)
+		else
 		{
 			// Total value of the row
 			W(i, i) = -1 * W.rowwise().sum()(i);
