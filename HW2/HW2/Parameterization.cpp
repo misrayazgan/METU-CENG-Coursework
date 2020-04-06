@@ -600,10 +600,10 @@ bool Parameterization::IsCutEdge(vector<int> cutVertices, vector<int> verts)
 	return false;
 }
 
-pair<map<int, int>, set<int>> Parameterization::CreateCut(Mesh *mesh, vector<int> &cutVertices)
+pair<map<int, int>, set<int>> Parameterization::CreateCut(Mesh *mesh)
 {
 	// Store global Ids for cut vertices and triangles.
-	FindCutVertices(mesh, cutVertices);
+	vector<int> cutVertices = FindCutVertices(mesh);
 	vector<int> cutVertsWithoutStartEnd = cutVertices;
 	cutVertsWithoutStartEnd.erase(cutVertsWithoutStartEnd.begin());
 	cutVertsWithoutStartEnd.erase(cutVertsWithoutStartEnd.begin() + cutVertsWithoutStartEnd.size() - 1);
