@@ -6,18 +6,6 @@ Parameterization::Parameterization(WeightEnum w, bool closed)
 	isClosed = closed;
 }
 
-bool Parameterization::isMouthVertex(Mesh *mesh, int v)
-{
-	float *coords = mesh->verts[v]->coords;
-	if(coords[0] >= -19 && coords[0] <= 27 && 
-		coords[1] >= -37 && coords[1] <= -33 &&
-		coords[2] >= 4 && coords[2] <= 24)
-	{
-		return true;
-	}
-	return false;
-}
-
 set<int> Parameterization::FindBoundaryVertices(Mesh *mesh)
 {
 	set<int> boundaryVertices;
@@ -57,14 +45,11 @@ set<int> Parameterization::FindBoundaryVertices(Mesh *mesh)
 		{
 			if(edgeCount[i][j] == 1)
 			{
-				if(isMouthVertex(mesh, i) == false && isMouthVertex(mesh, j) == false)
-				{
-					boundaryVertices.insert(i);
-					boundaryVertices.insert(j);
+				boundaryVertices.insert(i);
+				boundaryVertices.insert(j);
 
-					FreeEdge *edge = new FreeEdge(i, j, mesh->computeEdgeLength(i, j));
-					boundaryEdges.push_back(edge);
-				}
+				FreeEdge *edge = new FreeEdge(i, j, mesh->computeEdgeLength(i, j));
+				boundaryEdges.push_back(edge);
 			}
 		}
 	}
