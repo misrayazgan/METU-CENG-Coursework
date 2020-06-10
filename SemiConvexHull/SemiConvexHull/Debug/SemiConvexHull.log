@@ -1,0 +1,27 @@
+﻿Build started 10.06.2020 19:11:09.
+     1>Project "C:\Users\Lenovo\Documents\Visual Studio 2012\Projects\SemiConvexHull\SemiConvexHull\SemiConvexHull.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         E:\Program Dosyaları (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IE:\Coin3D\include /I"E:\3d-quickhull-master" /I"E:\convhull_3d-master" /IE:\EigenLib /ZI /nologo /W3 /WX- /Od /Oy- /D "WIN32" /D _DEBUG /D _CONSOLE /D "COIN_DLL" /D "SOWIN_DLL" /D "_UNICODE" /D "UNICODE" /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp Simplification.cpp
+         Simplification.cpp
+     1>c:\users\lenovo\documents\visual studio 2012\projects\semiconvexhull\semiconvexhull\mesh.h(96): warning C4091: 'typedef ' : ignored on left of 'Vec3f' when no variable is declared
+         Main.cpp
+     1>c:\users\lenovo\documents\visual studio 2012\projects\semiconvexhull\semiconvexhull\mesh.h(96): warning C4091: 'typedef ' : ignored on left of 'Vec3f' when no variable is declared
+     1>c:\users\lenovo\documents\visual studio 2012\projects\semiconvexhull\semiconvexhull\main.cpp(63): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\lenovo\documents\visual studio 2012\projects\semiconvexhull\semiconvexhull\main.cpp(84): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\lenovo\documents\visual studio 2012\projects\semiconvexhull\semiconvexhull\main.cpp(86): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\lenovo\documents\visual studio 2012\projects\semiconvexhull\semiconvexhull\main.cpp(117): warning C4018: '<' : signed/unsigned mismatch
+         Generating Code...
+       Link:
+         E:\Program Dosyaları (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Lenovo\Documents\Visual Studio 2012\Projects\SemiConvexHull\Debug\SemiConvexHull.exe" /INCREMENTAL /NOLOGO /LIBPATH:E:\Coin3D\lib coin2d.lib sowin1d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Lenovo\Documents\Visual Studio 2012\Projects\SemiConvexHull\Debug\SemiConvexHull.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Lenovo\Documents\Visual Studio 2012\Projects\SemiConvexHull\Debug\SemiConvexHull.lib" /MACHINE:X86 Debug\ConvexHull.obj
+         Debug\Main.obj
+         Debug\Mesh.obj
+         Debug\Painter.obj
+         Debug\Remeshing.obj
+         Debug\Sampling.obj
+         Debug\Simplification.obj
+         SemiConvexHull.vcxproj -> C:\Users\Lenovo\Documents\Visual Studio 2012\Projects\SemiConvexHull\Debug\SemiConvexHull.exe
+     1>Done Building Project "C:\Users\Lenovo\Documents\Visual Studio 2012\Projects\SemiConvexHull\SemiConvexHull\SemiConvexHull.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.52
