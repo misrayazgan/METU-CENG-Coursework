@@ -1,27 +1,5 @@
 #include "Remeshing.h"
 
-
-float Remeshing::CalculateEnergy(Mesh *mesh, vector<float *> samples)
-{
-	float firstSum = 0;
-	for(int i = 0; i < mesh->verts.size(); i++)
-	{
-		int nnIdx = FindNN(mesh, i, samples);
-		float dist = FindDistance(mesh->verts[i]->coords, samples[nnIdx]);	// dist i de donebilir findNN
-		firstSum += dist * dist;
-	}
-
-	float secondSum = 0;
-	for(int i = 0; i < mesh->edges.size(); i++)
-	{
-		float len = mesh->edges[i]->length;
-		float avgEdgeLen = mesh->computeAvgEdgeLength();
-		secondSum += pow(len * len - avgEdgeLen, 2);
-	}
-
-	return firstSum + secondSum;
-}
-
 float* Remeshing::FindCrossProduct(float *a, float *b)
 {
     float *result = new float[3];
@@ -562,6 +540,65 @@ void Remeshing::FlipEdge(Mesh *mesh, int v1, int v2, float* normal)
 	AddEdgeInfoToVertices(mesh, edgeId);
 }
 
+// Calculate dE for each vertex.
+vector<vector<float>> Remeshing::CalculateEnergyDerivative(Mesh *mesh, vector<float *> samples)
+{
+	vector<vector<float>> dE(mesh->verts.size(), vector<float>(3, 0));
+
+	// Vertex energy
+	for(int i = 0; i < mesh->verts.size(); i++)
+	{
+		int nnIdx = FindNN(mesh, i, samples);
+		
+		dE[i][0] = 2 * (mesh->verts[i]->coords[0] - samples[nnIdx][0]);
+		dE[i][1] = 2 * (mesh->verts[i]->coords[1] - samples[nnIdx][1]);
+		dE[i][2] = 2 * (mesh->verts[i]->coords[2] - samples[nnIdx][2]);
+	}
+
+	// Edge energy
+	float avgEdgeLen = mesh->computeAvgEdgeLength();
+	for(int i = 0; i < mesh->edges.size(); i++)
+	{
+		int v1 = mesh->edges[i]->v1i;
+		int v2 = mesh->edges[i]->v2i;
+		float *v1coords = mesh->verts[v1]->coords;
+		float *v2coords = mesh->verts[v2]->coords;
+		float edgeLen = FindDistance(v1coords, v2coords);
+		dE[v1][0] += 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[0] - v2coords[0]);
+		dE[v1][1] += 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[1] - v2coords[1]);
+		dE[v1][2] += 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[2] - v2coords[2]);
+
+		// dE[v2] lere ne olacak ?????????*
+		// dE(v2,:) = dE(v2,:) - 4*(norm2(V(v1,:)-V(v2,:))-l2)*(V(v1,:)-V(v2,:));
+	}
+
+	return dE;
+}
+
+void Remeshing::ShiftVertices(Mesh *mesh, float gamma, vector<vector<float>> dE)
+{
+	for(int i = 0; i < mesh->verts.size(); i++)
+	{
+		mesh->verts[i]->coords[0] -= gamma * dE[i][0];
+		mesh->verts[i]->coords[1] -= gamma * dE[i][1];
+		mesh->verts[i]->coords[2] -= gamma * dE[i][2];
+	}
+}
+
+void Remeshing::OptimizeMesh(Mesh *mesh)
+{
+	float gamma = 0.03;
+	int nSamples = mesh->tris.size() * 2;
+	Sampling *sampling = new Sampling(nSamples);
+	vector<float* > samples = sampling->UniformSampling(mesh);
+
+	for(int i = 0; i < 15; i++)
+	{
+		vector<vector<float>> dE = CalculateEnergyDerivative(mesh, samples);
+		ShiftVertices(mesh, gamma, dE);
+	}
+
+}
 
 
 

@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include "Mesh.h"
+#include "Sampling.h"
 #include <map>
 #include <set>
   
@@ -25,10 +26,12 @@ private:
 	void AddTriangleInfoToVertices(Mesh *mesh, int id);
 	void RemoveEdgeInfoFromVertices(Mesh *mesh, int edgeId);
 	void AddEdgeInfoToVertices(Mesh *mesh, int edgeId);
-	float CalculateEnergy(Mesh *mesh, vector<float *> samples);
 	bool IsConvexQuad(Mesh *mesh, int otherVertex, int v1, int v2, int v3);
 	float* FindPlaneNormal(float *a, float *b, float *c);
 public:
 	int FindNN(Mesh *mesh, int v, vector<float *> samples);
 	void SubdivideTriangles(Mesh *mesh, float avgLen);
+	void OptimizeMesh(Mesh *mesh);
+	void ShiftVertices(Mesh *mesh, float gamma, vector<vector<float>> dE);
+	vector<vector<float>> CalculateEnergyDerivative(Mesh *mesh, vector<float *> samples);
 };

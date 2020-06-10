@@ -104,7 +104,7 @@ int main(int, char ** argv)
 		root->addChild(painter->drawEdge(hullMesh, v1coords, v2coords, blue, false));
 	}*/
 
-	/*****************Remesh******************/
+	/*****************Remeshing the convex hull******************/
 	Remeshing *remesher = new Remeshing();
 	remesher->SubdivideTriangles(hullMesh, avgLen);
 
