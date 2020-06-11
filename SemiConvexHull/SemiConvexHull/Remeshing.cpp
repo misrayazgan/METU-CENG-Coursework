@@ -585,9 +585,24 @@ void Remeshing::ShiftVertices(Mesh *mesh, float gamma, vector<vector<float>> dE)
 	}
 }
 
+void Remeshing::ScaleVertices(Mesh *mesh, float scale)
+{
+	for(int i = 0; i < mesh->verts.size(); i++)
+	{
+		mesh->verts[i]->coords[0] *= scale;
+		mesh->verts[i]->coords[1] *= scale;
+		mesh->verts[i]->coords[2] *= scale;
+	}
+}
+
 void Remeshing::OptimizeMesh(Mesh *mesh)
 {
+	float w = 5;
 	float gamma = 0.03;
+	float *s = new float[2];
+	s[0] = 1.2;
+	s[1] = 1.05;
+	
 	int nSamples = mesh->tris.size() * 2;
 	Sampling *sampling = new Sampling(nSamples);
 	vector<float* > samples = sampling->UniformSampling(mesh);
