@@ -21,7 +21,7 @@ int main(int, char ** argv)
 	Mesh* mesh = new Mesh();
 	Painter* painter = new Painter();
 
-	char * filename = "centaur.off";
+	char * filename = "horse0.off";
 	mesh->loadOff(filename);
 
 	cout << "Number of Vertices: " << mesh->verts.size() << endl;
@@ -105,8 +105,12 @@ int main(int, char ** argv)
 	}*/
 
 	/*****************Remeshing the convex hull******************/
+	Sampling *sampling = new Sampling(hullMesh->tris.size() * 5);
+	vector<float *> samples = sampling->UniformSampling(hullMesh);
+
 	Remeshing *remesher = new Remeshing();
-	remesher->SubdivideTriangles(hullMesh, avgLen);
+	remesher->Remesh(hullMesh, avgLen);
+	remesher->OptimizeMesh(hullMesh, avgLen, samples);
 
 	cout << "AFTER REMESHING" << endl;
 	cout << "Hull mesh Number of Vertices: " << hullMesh->verts.size() << endl;
@@ -120,6 +124,9 @@ int main(int, char ** argv)
 		float * v2coords = hullMesh->verts[hullMesh->edges[i]->v2i]->coords;
 		root->addChild(painter->drawEdge(hullMesh, v1coords, v2coords, blue, true));
 	}
+
+
+
 
 
 

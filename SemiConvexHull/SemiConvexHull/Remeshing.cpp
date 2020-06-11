@@ -109,12 +109,12 @@ float Remeshing::FindMinAngleOfTriangle(float *v1coords, float *v2coords, float 
 	return minAngle;
 }
 
-void Remeshing::SubdivideTriangles(Mesh *mesh, float avgLen)
+void Remeshing::Remesh(Mesh *mesh, float avgLen)
 {
 	float alpha = sqrt(3);
 	bool newTriangleCreated = false;
 
-	for(int k = 0; k < 3; k++)
+	for(int k = 0; k < 2; k++)
 	{
 		vector<Triangle *> tris(mesh->tris.begin(), mesh->tris.end());
 
@@ -541,7 +541,7 @@ void Remeshing::FlipEdge(Mesh *mesh, int v1, int v2, float* normal)
 }
 
 // Calculate dE for each vertex.
-vector<vector<float>> Remeshing::CalculateEnergyDerivative(Mesh *mesh, vector<float *> samples)
+vector<vector<float>> Remeshing::CalculateEnergyDerivative(Mesh *mesh, float w, float avgEdgeLen, vector<float *> samples)
 {
 	vector<vector<float>> dE(mesh->verts.size(), vector<float>(3, 0));
 
@@ -550,13 +550,13 @@ vector<vector<float>> Remeshing::CalculateEnergyDerivative(Mesh *mesh, vector<fl
 	{
 		int nnIdx = FindNN(mesh, i, samples);
 		
-		dE[i][0] = 2 * (mesh->verts[i]->coords[0] - samples[nnIdx][0]);
-		dE[i][1] = 2 * (mesh->verts[i]->coords[1] - samples[nnIdx][1]);
-		dE[i][2] = 2 * (mesh->verts[i]->coords[2] - samples[nnIdx][2]);
+		dE[i][0] = w * 2 * (mesh->verts[i]->coords[0] - samples[nnIdx][0]);
+		dE[i][1] = w * 2 * (mesh->verts[i]->coords[1] - samples[nnIdx][1]);
+		dE[i][2] = w * 2 * (mesh->verts[i]->coords[2] - samples[nnIdx][2]);
 	}
 
 	// Edge energy
-	float avgEdgeLen = mesh->computeAvgEdgeLength();
+	//float avgEdgeLen = mesh->computeAvgEdgeLength();
 	for(int i = 0; i < mesh->edges.size(); i++)
 	{
 		int v1 = mesh->edges[i]->v1i;
@@ -564,9 +564,13 @@ vector<vector<float>> Remeshing::CalculateEnergyDerivative(Mesh *mesh, vector<fl
 		float *v1coords = mesh->verts[v1]->coords;
 		float *v2coords = mesh->verts[v2]->coords;
 		float edgeLen = FindDistance(v1coords, v2coords);
-		dE[v1][0] += 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[0] - v2coords[0]);
-		dE[v1][1] += 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[1] - v2coords[1]);
-		dE[v1][2] += 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[2] - v2coords[2]);
+		dE[v1][0] += 4 * (edgeLen * edgeLen - avgEdgeLen * avgEdgeLen) * (v1coords[0] - v2coords[0]);
+		dE[v1][1] += 4 * (edgeLen * edgeLen - avgEdgeLen * avgEdgeLen) * (v1coords[1] - v2coords[1]);
+		dE[v1][2] += 4 * (edgeLen * edgeLen - avgEdgeLen * avgEdgeLen) * (v1coords[2] - v2coords[2]);
+
+		/*dE[v2][0] -= 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[0] - v2coords[0]);
+		dE[v2][1] -= 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[1] - v2coords[1]);
+		dE[v2][2] -= 4 * (edgeLen * edgeLen - avgEdgeLen) * (v1coords[2] - v2coords[2]);*/
 
 		// dE[v2] lere ne olacak ?????????*
 		// dE(v2,:) = dE(v2,:) - 4*(norm2(V(v1,:)-V(v2,:))-l2)*(V(v1,:)-V(v2,:));
@@ -595,23 +599,23 @@ void Remeshing::ScaleVertices(Mesh *mesh, float scale)
 	}
 }
 
-void Remeshing::OptimizeMesh(Mesh *mesh)
+void Remeshing::OptimizeMesh(Mesh *mesh, float avgLen, vector<float *> samples)
 {
-	float w = 5;
+	float w = 0.05;
 	float gamma = 0.03;
 	float *s = new float[2];
 	s[0] = 1.2;
 	s[1] = 1.05;
-	
-	int nSamples = mesh->tris.size() * 2;
-	Sampling *sampling = new Sampling(nSamples);
-	vector<float* > samples = sampling->UniformSampling(mesh);
 
-	for(int i = 0; i < 15; i++)
+	ScaleVertices(mesh, s[0]);
+
+	/*for(int i = 0; i < 1; i++)
 	{
-		vector<vector<float>> dE = CalculateEnergyDerivative(mesh, samples);
+		vector<vector<float>> dE = CalculateEnergyDerivative(mesh, w, avgLen, samples);
 		ShiftVertices(mesh, gamma, dE);
-	}
+		cout << "shift " << i << endl;
+	}*/
+	Remesh(mesh, avgLen);
 
 }
 

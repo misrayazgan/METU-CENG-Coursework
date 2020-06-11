@@ -30,8 +30,9 @@ private:
 	float* FindPlaneNormal(float *a, float *b, float *c);
 public:
 	int FindNN(Mesh *mesh, int v, vector<float *> samples);
-	void SubdivideTriangles(Mesh *mesh, float avgLen);
-	void OptimizeMesh(Mesh *mesh);
+	void Remesh(Mesh *mesh, float avgLen);
+	void OptimizeMesh(Mesh *mesh, float avgLen, vector<float *> samples);
 	void ShiftVertices(Mesh *mesh, float gamma, vector<vector<float>> dE);
-	vector<vector<float>> CalculateEnergyDerivative(Mesh *mesh, vector<float *> samples);
+	void ScaleVertices(Mesh *mesh, float scale);
+	vector<vector<float>> CalculateEnergyDerivative(Mesh *mesh, float w, float avgEdgeLen, vector<float *> samples);
 };
