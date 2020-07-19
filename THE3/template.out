@@ -1,8 +1,0 @@
-\BOOKMARK [1][-]{section.1}{Baseline Architecture \(30 pts\)}{}% 1
-\BOOKMARK [2][-]{subsection.1.1}{Effect of Changing Number of Convolutional Layers}{section.1}% 2
-\BOOKMARK [2][-]{subsection.1.2}{Effect of Changing Kernel Size}{section.1}% 3
-\BOOKMARK [2][-]{subsection.1.3}{Effect of Changing Number of Kernels}{section.1}% 4
-\BOOKMARK [2][-]{subsection.1.4}{Effect of Changing Learning Rate}{section.1}% 5
-\BOOKMARK [1][-]{section.2}{Further Experiments \(20 pts\)}{}% 6
-\BOOKMARK [1][-]{section.3}{Your Best Configuration \(20 pts\)}{}% 7
-\BOOKMARK [1][-]{section.4}{Your Results on the Test Set\(30 pts\)}{}% 8
