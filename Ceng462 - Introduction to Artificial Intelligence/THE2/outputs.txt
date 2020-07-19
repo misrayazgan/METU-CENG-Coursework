@@ -1,0 +1,35 @@
+Goals can be inferred from the knowledge base with the following refutation steps:
+~r(A)$r(y),~q(y)$~q(A)
+~q(A)$q(z),~p(z,f(B))$~p(A,f(B))
+~p(A,f(B))$p(A,f(t))$empty_clause
+
+Goals can be inferred from the knowledge base with the following refutation steps:
+~c(W)$~a(x),~f(y),~s(x,y,z),~h(z),c(x)$~a(W),~f(y),~s(W,y,z),~h(z)
+~a(W),~f(y),~s(W,y,z),~h(z)$a(w)$~f(y),~s(W,y,z),~h(z)
+~f(y),~s(W,y,z),~h(z)$~m(x),f(x)$~s(W,y,z),~h(z),~m(y)
+~s(W,y,z),~h(z),~m(y)$~m(x),~o(N,x),s(W,x,N)$~h(N),~m(y),~o(N,y)
+~h(N),~m(y),~o(N,y)$~e(x,A),h(x)$~m(y),~o(N,y),~e(N,A)
+~m(y),~o(N,y),~e(N,A)$m(M)$~o(N,M),~e(N,A)
+~o(N,M),~e(N,A)$o(N,M)$~e(N,A)
+~e(N,A)$e(N,A)$empty_clause
+
+Goals can be inferred from the knowledge base with the following refutation steps:
+~s(M)$~a(x),s(x)$~a(M)
+~a(M)$~c(y),~f(x),a(x)$~c(y),~f(M)
+~c(y),~f(M)$c(F)$~f(M)
+~f(M)$f(M)$empty_clause
+
+Goals can be inferred from the knowledge base with the following refutation steps:
+~o(L,F)$~p(x,y),~a(x),o(x,y)$~p(L,F),~a(L)
+~p(L,F),~a(L)$~m(x,y),p(x,y)$~a(L),~m(L,F)
+~a(L),~m(L,F)$a(L)$~m(L,F)
+~m(L,F)$m(L,F)$empty_clause
+
+Goals can be inferred from the knowledge base with the following refutation steps:
+~k(C,T)$k(J,T),k(C,T)$k(J,T)
+k(J,T)$~l(x),~a(y),~k(x,y)$~l(J),~a(T)
+~l(J),~a(T)$~d(y),~o(x,y),l(x)$~a(T),~d(y),~o(J,y)
+~a(T),~d(y),~o(J,y)$~c(x),a(x)$~d(y),~o(J,y),~c(T)
+~d(y),~o(J,y),~c(T)$d(F)$~o(J,F),~c(T)
+~o(J,F),~c(T)$o(J,F)$~c(T)
+~c(T)$c(T)$empty_clause

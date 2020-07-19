@@ -1,0 +1,9 @@
+7 1
+d(F)
+o(J,F)
+~d(y),~o(x,y),l(x)
+~l(x),~a(y),~k(x,y)
+k(J,T),k(C,T)
+c(T)
+~c(x),a(x)
+~k(C,T)

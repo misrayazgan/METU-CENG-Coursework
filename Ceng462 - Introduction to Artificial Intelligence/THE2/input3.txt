@@ -1,0 +1,6 @@
+4 1
+m(L,F)
+a(L)
+~m(x,y),p(x,y)
+~p(x,y),~a(x),o(x,y)
+~o(L,F)
